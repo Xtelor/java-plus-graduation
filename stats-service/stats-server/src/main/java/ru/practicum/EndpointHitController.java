@@ -1,9 +1,6 @@
 package ru.practicum;
 
 import org.springframework.web.bind.annotation.*;
-
-import java.sql.Timestamp;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
