@@ -22,5 +22,5 @@ public class ViewStatsDto {
 
     @NotNull(message = "Количество просмотров не может быть пустым")
     @Min(value = 0, message = "Количество просмотров не может быть отрицательным")
-    private Integer hits;
+    private Long hits;
 }

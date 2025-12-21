@@ -13,7 +13,7 @@ public class EndpointHitMapper {
             .ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneOffset.UTC);
 
-    public static ViewStatsDto toViewStatsDto(EndpointHit endpointHit, Integer hits) {
+    public static ViewStatsDto toViewStatsDto(EndpointHit endpointHit, Long hits) {
         return new ViewStatsDto(
                 endpointHit.getApp(),
                 endpointHit.getUri(),

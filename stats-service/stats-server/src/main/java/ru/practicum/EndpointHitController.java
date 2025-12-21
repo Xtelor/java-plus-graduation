@@ -1,5 +1,6 @@
 package ru.practicum;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -15,13 +16,13 @@ public class EndpointHitController {
     public List<ViewStatsDto> getAll(
             @RequestParam String start,
             @RequestParam String end,
-            @RequestParam String[] uris,
+            @RequestParam(required = false) String[] uris,
             @RequestParam(defaultValue = "false") Boolean unique) {
         return endpointHitService.getStatistics(start, end, uris, unique);
     }
 
     @PostMapping("/hit")
-    public void create(@RequestBody EndpointHitDto endpointHitDto) {
+    public void create(@Valid @RequestBody EndpointHitDto endpointHitDto) {
         endpointHitService.create(endpointHitDto);
     }
 }
