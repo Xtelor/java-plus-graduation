@@ -2,16 +2,13 @@ package ru.practicum.event;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import ru.practicum.user.User;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "stats", schema = "public")
+@Table(name = "events", schema = "public")
 @Data
 public class Event {
 
