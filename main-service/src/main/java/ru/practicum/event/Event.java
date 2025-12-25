@@ -3,6 +3,7 @@ package ru.practicum.event;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import ru.practicum.category.Category;
 import ru.practicum.user.User;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,10 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @NotBlank(message = "Аннотация события не может быть пустой")
     @Column(nullable = false)
