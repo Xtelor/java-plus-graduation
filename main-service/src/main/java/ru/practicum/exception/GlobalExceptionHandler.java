@@ -6,7 +6,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.user.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -22,7 +21,20 @@ public class GlobalExceptionHandler {
         response.put("status", "NOT_FOUND");
         response.put("reason", "The required object was not found.");
         response.put("message", e.getMessage());
-        response.put("timestamp", LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        response.put("timestamp", LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        return response;
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> handleConflictException(ConflictException e) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "CONFLICT");
+        response.put("reason", "For the requested operation the conditions are not met.");
+        response.put("message", e.getMessage());
+        response.put("timestamp", LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         return response;
     }
 
@@ -33,7 +45,8 @@ public class GlobalExceptionHandler {
         response.put("status", "CONFLICT");
         response.put("reason", "Integrity constraint has been violated.");
         response.put("message", e.getMessage());
-        response.put("timestamp", LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        response.put("timestamp", LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         return response;
     }
 
@@ -47,7 +60,8 @@ public class GlobalExceptionHandler {
                 .map(error -> String.format("Field: %s. Error: %s. Value: %s",
                         error.getField(), error.getDefaultMessage(), error.getRejectedValue()))
                 .collect(java.util.stream.Collectors.joining("; ")));
-        response.put("timestamp", LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        response.put("timestamp", LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         return response;
     }
 }
