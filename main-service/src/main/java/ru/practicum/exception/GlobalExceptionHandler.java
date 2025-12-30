@@ -26,6 +26,18 @@ public class GlobalExceptionHandler {
         return response;
     }
 
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object> handleValidationException(ValidationException e) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "BAD_REQUEST");
+        response.put("reason", "Incorrectly made request.");
+        response.put("message", e.getMessage());
+        response.put("timestamp", LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        return response;
+    }
+
     @ExceptionHandler(ConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, Object> handleConflictException(ConflictException e) {
