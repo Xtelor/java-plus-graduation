@@ -1,8 +1,9 @@
 package ru.practicum.event;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Data;
+import ru.practicum.category.Category;
 import ru.practicum.user.User;
 
 import java.time.LocalDateTime;
@@ -10,37 +11,51 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "events", schema = "public")
 @Data
+@Builder
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @NotBlank(message = "Аннотация события не может быть пустой")
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2000)
     private String annotation;
 
-    @NotBlank(message = "Описание события не может быть пустым")
-    @Column(nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @Column(name = "created_on")
+    private LocalDateTime createdOn;
+
+    @Column(nullable = false, length = 7000)
     private String description;
 
     @Column(name = "event_date")
     private LocalDateTime eventDate;
 
+    @ManyToOne
+    @JoinColumn(name = "initiator_id")
+    private User initiator;
+
+    @Embedded
+    private Location location;
+
     @Column(name = "is_paid")
     private boolean paid;
-
-    @Column(name = "request_moderation")
-    private boolean requestModeration;
 
     @Column(name = "participation_limit")
     private Integer participationLimit;
 
-    @NotBlank(message = "Заголовок события не может быть пустым")
-    @Column(nullable = false)
+    @Column(name = "published_on")
+    private LocalDateTime publishedOn;
+
+    @Column(name = "request_moderation")
+    private boolean requestModeration;
+
+    @Enumerated(EnumType.STRING)
+    private State state;
+
+    @Column(nullable = false, length = 120)
     private String title;
 }
