@@ -1,6 +1,7 @@
 package ru.practicum;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -26,8 +27,9 @@ public class StatsClient {
     private static final ParameterizedTypeReference<List<ViewStatsDto>> LIST_TYPE =
             new ParameterizedTypeReference<>() {};
 
-    public StatsClient(String serverUrl) {
+    public StatsClient(@Value("${stats.service.url}") String serverUrl) {
         this.serverUrl = serverUrl;
+        log.info("StatsClient инициализирован с URL: {}", serverUrl);
     }
 
     // Сохранение информации о том, что к эндпоинту был запрос
