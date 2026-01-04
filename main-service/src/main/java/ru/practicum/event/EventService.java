@@ -10,5 +10,5 @@ public interface EventService {
 
     EventFullDto createEvent(NewEventDto NewEventDto, Long initiatorId);
 
-//    List<EventShortDto> getEventsByInitiatorId(Long initiatorId);
+    List<EventShortDto> findByInitiatorId(Long initiatorId, int from, int size);
 }

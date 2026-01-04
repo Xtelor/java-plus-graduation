@@ -3,9 +3,13 @@ package ru.practicum.event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import ru.practicum.StatsClient;
 import ru.practicum.category.Category;
 import ru.practicum.category.CategoryMapper;
 import ru.practicum.category.CategoryRepository;
@@ -15,7 +19,6 @@ import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.user.*;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -29,6 +32,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
 
+    private final StatsClient statsClient;
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final UserRepository userRepository;
@@ -87,9 +91,12 @@ public class EventServiceImpl implements EventService {
 
         return eventFullDto;
     }
-//
-//    @Override
-//    public List<EventShortDto> getEventsByInitiatorId(Long initiatorId){
-//
-//    }
+
+    @Override
+    public List<EventShortDto> findByInitiatorId(Long initiatorId, int from, int size) {
+        Pageable pageable = PageRequest.of(from, size, Sort.by("eventDate"));
+        return eventRepository.findByInitiatorId(initiatorId, pageable)
+                .map(EventMapper::toShortDto)
+                .getContent();
+    }
 }

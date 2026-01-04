@@ -1,8 +1,10 @@
 package ru.practicum.event;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.category.Category;
 import ru.practicum.user.User;
 
@@ -11,6 +13,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "events", schema = "public")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Event {
 
