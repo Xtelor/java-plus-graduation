@@ -1,8 +1,10 @@
 package ru.practicum.event;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.category.Category;
 import ru.practicum.user.User;
 
@@ -12,6 +14,8 @@ import java.time.LocalDateTime;
 @Table(name = "events", schema = "public")
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Event {
 
     @Id
@@ -51,11 +55,14 @@ public class Event {
     private LocalDateTime publishedOn;
 
     @Column(name = "request_moderation")
-    private boolean requestModeration;
+    private Boolean requestModeration;
 
     @Enumerated(EnumType.STRING)
     private State state;
 
     @Column(nullable = false, length = 120)
     private String title;
+
+    @Column(name = "views")
+    private Long views;
 }
