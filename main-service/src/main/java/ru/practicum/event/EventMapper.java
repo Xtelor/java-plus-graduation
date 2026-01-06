@@ -37,6 +37,10 @@ public class EventMapper {
     }
 
     public EventShortDto toShortDto(Event event) {
+        if (event == null) {
+            return null;
+        }
+
         return EventShortDto.builder()
                 .id(event.getId())
                 .title(event.getTitle())
