@@ -2,13 +2,12 @@ package ru.practicum.event;
 
 import org.springframework.stereotype.Component;
 import ru.practicum.category.CategoryMapper;
+import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
-import ru.practicum.user.User;
-import ru.practicum.user.UserDto;
+import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.user.UserMapper;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -32,6 +31,19 @@ public class EventMapper {
                 .build();
     }
 
+    public static Event toEntity(UpdateEventUserRequest updateEventUserRequest) {
+        return Event.builder()
+                .annotation(updateEventUserRequest.getAnnotation())
+                .description(updateEventUserRequest.getDescription())
+                .eventDate(LocalDateTime.from(FORMATTER.parse(updateEventUserRequest.getEventDate())))
+                .location(updateEventUserRequest.getLocation())
+                .paid(updateEventUserRequest.getPaid())
+                .participationLimit(updateEventUserRequest.getParticipationLimit())
+                .requestModeration(updateEventUserRequest.getRequestModeration())
+                .title(updateEventUserRequest.getTitle())
+                .build();
+    }
+
     public static EventShortDto toShortDto(Event event) {
         return EventShortDto.builder()
                 .annotation(event.getAnnotation())
@@ -40,6 +52,25 @@ public class EventMapper {
                 .id(event.getId())
                 .initiator(event.getInitiator() != null ? UserMapper.toShortDto(event.getInitiator()) : null)
                 .paid(event.isPaid())
+                .title(event.getTitle())
+                .build();
+    }
+
+    public static EventFullDto toFullDto(Event event) {
+        return EventFullDto.builder()
+                .annotation(event.getAnnotation())
+                .category(event.getCategory() != null ? CategoryMapper.toDto(event.getCategory()) : null)
+                .createdOn(FORMATTER.format(event.getCreatedOn()))
+                .description(event.getDescription())
+                .eventDate(event.getEventDate() != null ? FORMATTER.format(event.getEventDate()) : "")
+                .id(event.getId())
+                .initiator(event.getInitiator() != null ? UserMapper.toShortDto(event.getInitiator()) : null)
+                .location(event.getLocation())
+                .paid(event.isPaid())
+                .participationLimit(event.getParticipationLimit())
+                .publishedOn(event.getPublishedOn() != null ? FORMATTER.format(event.getPublishedOn()) : "")
+                .requestModeration(event.isRequestModeration())
+                .state(event.getState().toString())
                 .title(event.getTitle())
                 .build();
     }

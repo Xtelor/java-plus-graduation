@@ -10,6 +10,7 @@ import ru.practicum.event.EventService;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.UpdateEventUserRequest;
 
 import java.util.List;
 
@@ -24,8 +25,15 @@ public class PrivateEventController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public EventFullDto createEvent(@Valid @RequestBody NewEventDto newEventDto, @PathVariable("userId") Long initiatorId) {
-        log.info("POST запрос на создание события: {}", newEventDto);
+        log.info("POST запрос на создание события пользователем: {}", newEventDto);
         return eventService.createEvent(newEventDto, initiatorId);
+    }
+
+    @PatchMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventFullDto updateEvent(@Valid @RequestBody UpdateEventUserRequest updateEventUserRequest, @PathVariable("userId") Long initiatorId, @PathVariable Long eventId) {
+        log.info("PATCH запрос на обновление события с id: , добавленного текущим пользователем {}", eventId);
+        return eventService.updateEventUser(updateEventUserRequest, initiatorId, eventId);
     }
 
     @GetMapping
