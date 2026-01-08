@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.EventService;
+import ru.practicum.event.SortEvents;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.params.PublicEventsParam;
 
@@ -28,7 +29,7 @@ public class PublicEventController {
             @RequestParam (required = false) String rangeStart,
             @RequestParam (required = false) String rangeEnd,
             @RequestParam (defaultValue = "false") Boolean onlyAvailable,
-            @RequestParam String sort,
+            @RequestParam SortEvents sort,
             @RequestParam (defaultValue = "0") Integer from,
             @RequestParam (defaultValue = "10") Integer size) {
 

@@ -1,4 +1,6 @@
 package ru.practicum.event;
 
-public class SortEvents {
+public enum SortEvents {
+    EVENT_DATE,
+    VIEWS
 }

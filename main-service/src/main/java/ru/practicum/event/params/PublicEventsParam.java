@@ -3,6 +3,7 @@ package ru.practicum.event.params;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.event.SortEvents;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class PublicEventsParam {
     private String rangeStart;
     private String rangeEnd;
     private Boolean onlyAvailable;
-    private String sort;
+    private SortEvents sort;
     private Integer from;
     private Integer size;
 }
