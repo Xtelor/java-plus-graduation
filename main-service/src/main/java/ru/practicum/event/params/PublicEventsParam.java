@@ -19,4 +19,5 @@ public class PublicEventsParam {
     private Boolean onlyAvailable;
     private String sort;
     private Integer from;
+    private Integer size;
 }

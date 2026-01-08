@@ -33,7 +33,7 @@ public class PublicEventController {
             @RequestParam (defaultValue = "10") Integer size) {
 
         log.info("Получение событий через публичный эндпоинт");
-        PublicEventsParam publicEventsParam = new  PublicEventsParam(text, categories, paid,  rangeStart, rangeEnd, onlyAvailable, sort, from);
+        PublicEventsParam publicEventsParam = new PublicEventsParam(text, categories, paid,  rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         return eventService.getEventsPublic(publicEventsParam);
     }
 }
