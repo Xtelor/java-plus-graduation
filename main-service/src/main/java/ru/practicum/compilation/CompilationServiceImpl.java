@@ -12,7 +12,7 @@ import ru.practicum.event.EventMapper;
 import ru.practicum.event.EventRepository;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.request.RequestRepository;
+import ru.practicum.request.repository.RequestRepository;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -29,17 +29,14 @@ public class CompilationServiceImpl implements CompilationService {
     private final RequestRepository requestRepository;
     private final StatsClient statsClient;
     private final EventMapper eventMapper;
+    private final CompilationMapper compilationMapper;
 
     @Override
     @Transactional
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
         log.info("Создание подборки: {}", newCompilationDto.getTitle());
 
-        Compilation compilation = Compilation.builder()
-                .title(newCompilationDto.getTitle())
-                .pinned(newCompilationDto.getPinned() != null ? newCompilationDto.getPinned() : false)
-                .events(new HashSet<>())
-                .build();
+        Compilation compilation = compilationMapper.toEntity(newCompilationDto);
 
         if (newCompilationDto.getEvents() != null && !newCompilationDto.getEvents().isEmpty()) {
             Set<Event> events = findEventsByIds(newCompilationDto.getEvents());
@@ -115,21 +112,13 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     private CompilationDto convertCompilationToDto(Compilation compilation) {
-        CompilationDto dto = CompilationDto.builder()
-                .id(compilation.getId())
-                .title(compilation.getTitle())
-                .pinned(compilation.getPinned())
-                .build();
+        Set<EventShortDto> events = new HashSet<>();
 
         if (compilation.getEvents() != null && !compilation.getEvents().isEmpty()) {
-            dto.setEvents(convertEventsToShortDtos(
-                    new ArrayList<>(compilation.getEvents())
-            ));
-        } else {
-            dto.setEvents(Collections.emptySet());
+            events = convertEventsToShortDtos(new ArrayList<>(compilation.getEvents()));
         }
 
-        return dto;
+        return compilationMapper.toDto(compilation, events);
     }
 
     private List<CompilationDto> convertCompilationsToDtoList(List<Compilation> compilations) {
@@ -137,12 +126,12 @@ public class CompilationServiceImpl implements CompilationService {
                 .filter(c -> c.getEvents() != null && !c.getEvents().isEmpty())
                 .flatMap(c -> c.getEvents().stream())
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
 
         Map<Long, Long> viewsMap = getViewsForEvents(
                 allEvents.stream().map(Event::getId).collect(Collectors.toSet())
         );
-        Map<Long, Integer> confirmedRequestsMap = getConfirmedRequestsForEvents(
+        Map<Long, Long> confirmedRequestsMap = getConfirmedRequestsForEvents(
                 allEvents.stream().map(Event::getId).collect(Collectors.toSet())
         );
 
@@ -154,28 +143,22 @@ public class CompilationServiceImpl implements CompilationService {
 
         return compilations.stream()
                 .map(compilation -> {
-                    CompilationDto dto = CompilationDto.builder()
-                            .id(compilation.getId())
-                            .title(compilation.getTitle())
-                            .pinned(compilation.getPinned())
-                            .build();
+                    Set<EventShortDto> events = new HashSet<>();
 
                     if (compilation.getEvents() != null && !compilation.getEvents().isEmpty()) {
-                        Set<EventShortDto> eventDtos = compilation.getEvents().stream()
+                        events = compilation.getEvents().stream()
                                 .map(event -> eventDtoMap.get(event.getId()))
                                 .filter(Objects::nonNull)
                                 .collect(Collectors.toSet());
-                        dto.setEvents(eventDtos);
-                    } else {
-                        dto.setEvents(Collections.emptySet());
                     }
 
-                    return dto;
+                    // Вызываем маппер
+                    return compilationMapper.toDto(compilation, events);
                 })
                 .collect(Collectors.toList());
     }
 
-    private Set<Object> convertEventsToShortDtos(List<Event> events) {
+    private Set<EventShortDto> convertEventsToShortDtos(List<Event> events) {
         if (events.isEmpty()) {
             return Collections.emptySet();
         }
@@ -185,7 +168,7 @@ public class CompilationServiceImpl implements CompilationService {
                 .collect(Collectors.toSet());
 
         Map<Long, Long> viewsMap = getViewsForEvents(eventIds);
-        Map<Long, Integer> confirmedRequestsMap = getConfirmedRequestsForEvents(eventIds);
+        Map<Long, Long> confirmedRequestsMap = getConfirmedRequestsForEvents(eventIds);
 
         return events.stream()
                 .map(event -> createEventShortDtoWithStats(event, viewsMap, confirmedRequestsMap))
@@ -194,11 +177,11 @@ public class CompilationServiceImpl implements CompilationService {
 
     private EventShortDto createEventShortDtoWithStats(Event event,
                                                        Map<Long, Long> viewsMap,
-                                                       Map<Long, Integer> confirmedRequestsMap) {
+                                                       Map<Long, Long> confirmedRequestsMap) {
         EventShortDto dto = eventMapper.toShortDto(event);
         if (dto != null) {
             dto.setViews(viewsMap.getOrDefault(event.getId(), 0L));
-            dto.setConfirmedRequests(confirmedRequestsMap.getOrDefault(event.getId(), 0));
+            dto.setConfirmedRequests(confirmedRequestsMap.getOrDefault(event.getId(), 0L));
         }
         return dto;
     }
@@ -225,7 +208,7 @@ public class CompilationServiceImpl implements CompilationService {
                     .collect(Collectors.toMap(
                             stat -> extractEventIdFromUri(stat.getUri()),
                             ViewStatsDto::getHits,
-                            (existing, replacement) -> existing + replacement
+                            Long::sum
                     ));
         } catch (Exception e) {
             log.warn("Не удалось получить статистику: {}", e.getMessage());
@@ -233,7 +216,7 @@ public class CompilationServiceImpl implements CompilationService {
         }
     }
 
-    private Map<Long, Integer> getConfirmedRequestsForEvents(Set<Long> eventIds) {
+    private Map<Long, Long> getConfirmedRequestsForEvents(Set<Long> eventIds) {
         if (eventIds.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -243,7 +226,7 @@ public class CompilationServiceImpl implements CompilationService {
         return results.stream()
                 .collect(Collectors.toMap(
                         result -> (Long) result[0],
-                        result -> ((Long) result[1]).intValue()
+                        result -> (Long) result[1]
                 ));
     }
 

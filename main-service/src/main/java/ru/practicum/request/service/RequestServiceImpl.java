@@ -1,14 +1,15 @@
 package ru.practicum.request.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.Event;
 import ru.practicum.event.EventRepository;
 import ru.practicum.event.State;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.request.RequestRepository;
-import ru.practicum.request.RequestService;
+import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.Request;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)
 public class RequestServiceImpl implements RequestService {
 
     private final RequestRepository requestRepository;
@@ -32,9 +35,13 @@ public class RequestServiceImpl implements RequestService {
 
     // Добавление запроса на участие в событии
     @Override
+    @Transactional
     public ParticipationRequestDto addRequest(Long userId, Long eventId) {
+        log.info("Пользователь userId = {} создает запрос на участие в событии eventId = {}", userId, eventId);
+
         // Проверка на добавление повторного запроса
         if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
+            log.warn("Попытка повторного запроса: userId = {}, eventId = {}", userId, eventId);
             throw new ConflictException("Нельзя добавить повторный запрос.");
         }
 
@@ -51,34 +58,50 @@ public class RequestServiceImpl implements RequestService {
                 .build();
 
         if (!event.getRequestModeration() || event.getParticipationLimit() == 0) {
+            log.info("Заявка подтверждена автоматически (лимит = 0 или модерация отключена): eventId = {}", eventId);
             request.setStatus(RequestStatus.CONFIRMED);
         }
 
-        return requestMapper.toDto(requestRepository.save(request));
+        Request savedRequest = requestRepository.save(request);
+        log.info("Запрос успешно создан: requestId = {}, status = {}", savedRequest.getId(), savedRequest.getStatus());
+
+        return requestMapper.toDto(savedRequest);
     }
 
     // Отмена запроса на участие в событии
     @Override
+    @Transactional
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
+        log.info("Пользователь userId = {} отменяет запрос requestId = {}", userId, requestId);
+
         // Проверка существования пользователя
         findUserById(userId);
 
         // Проверка и получение запроса
         Request request = findRequestAndCheckOwner(requestId, userId);
-
         request.setStatus(RequestStatus.CANCELED);
-        return requestMapper.toDto(requestRepository.save(request));
+
+        Request savedRequest = requestRepository.save(request);
+        log.info("Запрос requestId = {} переведен в статус CANCELED", requestId);
+
+        return requestMapper.toDto(savedRequest);
     }
 
     // Получение списка запросов текущего пользователя на участие в чужих событиях
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
+        log.info("Получение всех запросов пользователя userId = {}", userId);
+
         // Проверка существования пользователя
         findUserById(userId);
 
-        return requestRepository.findAllByRequesterId(userId).stream()
+        List<ParticipationRequestDto> requests = requestRepository.findAllByRequesterId(userId).stream()
                 .map(requestMapper::toDto)
                 .collect(Collectors.toList());
+
+        log.info("Найдено {} запросов для userId = {}", requests.size(), userId);
+
+        return requests;
     }
 
     // Проверка существования пользователя
@@ -116,10 +139,10 @@ public class RequestServiceImpl implements RequestService {
     // Проверка существования запроса и проверка запроса пользователя
     private Request findRequestAndCheckOwner(Long requestId, Long userId) {
         Request request = requestRepository.findById(requestId)
-                .orElseThrow(() -> new NotFoundException("Запрос с id=" + requestId + " не найден"));
+                .orElseThrow(() -> new NotFoundException("Запрос с id = " + requestId + " не найден."));
 
         if (!Objects.equals(request.getRequester().getId(), userId)) {
-            throw new NotFoundException("Запрос с id=" + requestId + " не найден у текущего пользователя");
+            throw new NotFoundException("Запрос с id = " + requestId + " не найден у текущего пользователя.");
         }
         return request;
     }

@@ -1,5 +1,6 @@
 package ru.practicum.event;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +17,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "WHERE e.id IN :ids")
     List<Event> findAllByIdIn(@Param("ids") Set<Long> ids);
 
-    // другие методы...
     Optional<Event> findByIdAndInitiatorId(Long id, Long initiatorId);
+
+    List<Event> findAllByInitiatorId(Long initiatorId, Pageable pageable);
 }

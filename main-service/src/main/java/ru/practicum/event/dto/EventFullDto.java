@@ -16,7 +16,7 @@ public class EventFullDto {
 
     private CategoryDto category;
 
-    private Integer confirmedRequests;
+    private Long confirmedRequests;
 
     private String createdOn;
 
@@ -30,17 +30,17 @@ public class EventFullDto {
 
     private Location location;
 
-    private boolean paid;
+    private Boolean paid;
 
     private Integer participationLimit;
 
     private String publishedOn;
 
-    private boolean requestModeration;
+    private Boolean requestModeration;
 
     private String state;
 
     private String title;
 
-    private Integer views;
+    private Long views;
 }

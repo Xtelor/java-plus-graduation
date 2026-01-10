@@ -24,5 +24,4 @@ public interface CompilationRepository extends JpaRepository<Compilation, Long> 
             "WHERE c.id = :compilationId")
     Optional<Compilation> findByIdWithEvents(@Param("compilationId") Long compilationId);
 
-    boolean existsById(Long compilationId);
 }

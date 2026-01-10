@@ -26,13 +26,13 @@ public class Request {
 
     // Событие
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "event_id", nullable = false)
     @ToString.Exclude
     private Event event;
 
     // Запрашивающий пользователь
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "requester_id")
+    @JoinColumn(name = "requester_id", nullable = false)
     @ToString.Exclude
     private User requester;
 
