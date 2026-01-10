@@ -329,7 +329,7 @@ public class EventServiceImpl implements EventService {
                         currentEvent -> "/events/" + currentEvent.getId(),
                         Event::getId)
                 );
-        Map<Long, Long> views = statsClient.getStats(null, null, uris.keySet().stream().toList(), false)
+        Map<Long, Long> views = statsClient.getStats(null, LocalDateTime.now(), uris.keySet().stream().toList(), false)
                 .stream()
                 .collect(Collectors.toMap(
                         currentViewStatDto -> uris.get(currentViewStatDto.getUri()),
