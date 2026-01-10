@@ -1,5 +1,6 @@
 package ru.practicum.event.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -7,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.EventService;
 import ru.practicum.event.SortEvents;
+import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.params.PublicEventsParam;
 
@@ -31,10 +33,18 @@ public class PublicEventController {
             @RequestParam (defaultValue = "false") Boolean onlyAvailable,
             @RequestParam SortEvents sort,
             @RequestParam (defaultValue = "0") Integer from,
-            @RequestParam (defaultValue = "10") Integer size) {
+            @RequestParam (defaultValue = "10") Integer size,
+            HttpServletRequest request) {
 
         log.info("Получение событий через публичный эндпоинт");
         PublicEventsParam publicEventsParam = new PublicEventsParam(text, categories, paid,  rangeStart, rangeEnd, onlyAvailable, sort, from, size);
-        return eventService.getEventsPublic(publicEventsParam);
+        return eventService.getEventsPublic(publicEventsParam, request.getRemoteAddr(), request.getRequestURI());
+    }
+
+    @GetMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventFullDto findById(@PathVariable Long eventId, HttpServletRequest request) {
+        log.info("Получение полной информации о событии");
+        return eventService.findById(eventId, request.getRemoteAddr(), request.getRequestURI());
     }
 }

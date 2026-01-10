@@ -14,6 +14,7 @@ public class EventFullDto {
 
     private String annotation;
     private CategoryDto category;
+    private Integer confirmedRequests;
     private String createdOn;
     private String description;
     private String eventDate;
@@ -26,5 +27,5 @@ public class EventFullDto {
     private boolean requestModeration;
     private String state;
     private String title;
-    private Integer views;
+    private Long views;
 }

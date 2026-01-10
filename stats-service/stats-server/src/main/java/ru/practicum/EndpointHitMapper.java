@@ -24,6 +24,7 @@ public class EndpointHitMapper {
     public static EndpointHit toEndpointHit(EndpointHitDto endpointHitDto) {
         EndpointHit endpointHit = new EndpointHit();
         endpointHit.setId(endpointHitDto.getId());
+        endpointHit.setIp(endpointHitDto.getIp());
         endpointHit.setApp(endpointHitDto.getApp());
         endpointHit.setUri(endpointHitDto.getUri());
         endpointHit.setTimestamp(Instant.from(FORMATTER.parse(endpointHitDto.getTimestamp())));

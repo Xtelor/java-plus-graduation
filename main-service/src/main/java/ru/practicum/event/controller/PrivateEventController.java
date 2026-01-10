@@ -44,4 +44,11 @@ public class PrivateEventController {
         log.info("Получение событий, добавленных текущим пользователем");
         return eventService.findByInitiatorId(initiatorId, from, size);
     }
+
+    @GetMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventFullDto findByIdAndInitiatorId(@PathVariable("userId") Long initiatorId, @PathVariable Long eventId) {
+        log.info("Получение подробной информации о событии, добавленном текущим пользователем");
+        return eventService.findByIdAndInitiatorId(initiatorId, eventId);
+    }
 }
