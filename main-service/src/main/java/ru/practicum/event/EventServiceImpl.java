@@ -18,6 +18,8 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ConditionsNotMetException;
 import ru.practicum.event.dto.*;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.request.mapper.RequestMapper;
+import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -38,6 +40,8 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final RequestRepository requestRepository;
+    private final RequestMapper requestMapper;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -261,7 +265,7 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getEventsPublic(PublicEventsParam publicEventsParam, String ip, String uri) {
         log.info("Получение опубликованных событий");
         Pageable pageable = PageRequest.of(publicEventsParam.getFrom(), publicEventsParam.getSize(), Sort.by("eventDate"));
-        List<Event> events =  eventRepository.getEventsPublic(publicEventsParam, pageable).getContent();
+        List<Event> events = eventRepository.getEventsPublic(publicEventsParam, pageable).getContent();
         Map<Long, Long> views = getViews(events);
         List<EventShortDto> eventsShortDto = events
                 .stream()
@@ -287,7 +291,7 @@ public class EventServiceImpl implements EventService {
     public List<EventFullDto> searchEventsByAdmin(AdminEventsParam adminEventsParam) {
         log.info("Получение событий администратором");
         Pageable pageable = PageRequest.of(adminEventsParam.getFrom(), adminEventsParam.getSize(), Sort.by("eventDate"));
-        List<Event> events =  eventRepository.searchEventsByAdmin(adminEventsParam, pageable).getContent();
+        List<Event> events = eventRepository.searchEventsByAdmin(adminEventsParam, pageable).getContent();
         Map<Long, Long> views = getViews(events);
         List<EventFullDto> eventsFullDto = events
                 .stream()

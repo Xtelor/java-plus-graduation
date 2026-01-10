@@ -35,6 +35,7 @@ public class NewEventDto {
     private Boolean paid = false;
 
     @PositiveOrZero(message = "Число участников должно быть неотрицательным")
+    @Builder.Default
     private Integer participationLimit = 0;
 
     @Builder.Default
