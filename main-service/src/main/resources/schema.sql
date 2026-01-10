@@ -24,7 +24,7 @@ create TABLE IF NOT EXISTS events (
     lat DECIMAL(10, 8) NOT NULL,
     lon DECIMAL(11, 8) NOT NULL,
     is_paid BOOLEAN NOT NULL,
-    participation_limit INTEGER,
+    participant_Limit INTEGER,
     published_on TIMESTAMP,
     request_moderation BOOLEAN,
     state VARCHAR(20) DEFAULT 'PENDING',

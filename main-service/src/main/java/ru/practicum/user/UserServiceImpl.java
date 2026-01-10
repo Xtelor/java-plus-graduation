@@ -24,14 +24,6 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(NewUserRequest newUserRequest) {
         log.info("Создание пользователя с email: {}", newUserRequest.getEmail());
 
-        // Проверка уникальности email (хотя уникальность также на уровне БД)
-        if (userRepository.existsByEmail(newUserRequest.getEmail())) {
-            log.warn("Пользователь с email {} уже существует", newUserRequest.getEmail());
-            throw new DataIntegrityViolationException(
-                    String.format("Пользователь с email %s уже существует", newUserRequest.getEmail())
-            );
-        }
-
         User user = UserMapper.toEntity(newUserRequest);
         User savedUser = userRepository.save(user);
         log.info("Пользователь создан с ID: {}", savedUser.getId());

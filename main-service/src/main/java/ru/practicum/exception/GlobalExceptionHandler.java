@@ -85,7 +85,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConditionsNotMetException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, Object> handleConditionsNotMetExceptionException(ConditionsNotMetException e) {
+    public Map<String, Object> handleConditionsNotMetException(ConditionsNotMetException e) {
         Map<String, Object> response = new HashMap<>();
         response.put("status", "FORBIDDEN");
         response.put("reason", "For the requested operation the conditions are not met.");

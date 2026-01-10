@@ -25,7 +25,7 @@ public class EventMapper {
                 .eventDate(LocalDateTime.from(FORMATTER.parse(newEventDto.getEventDate())))
                 .location(newEventDto.getLocation())
                 .paid(newEventDto.isPaid())
-                .participationLimit(newEventDto.getParticipationLimit())
+                .participantLimit(newEventDto.getParticipantLimit())
                 .requestModeration(newEventDto.isRequestModeration())
                 .title(newEventDto.getTitle())
                 .build();
@@ -38,7 +38,7 @@ public class EventMapper {
                 .eventDate(LocalDateTime.from(FORMATTER.parse(updateEventUserRequest.getEventDate())))
                 .location(updateEventUserRequest.getLocation())
                 .paid(updateEventUserRequest.getPaid())
-                .participationLimit(updateEventUserRequest.getParticipationLimit())
+                .participantLimit(updateEventUserRequest.getParticipantLimit())
                 .requestModeration(updateEventUserRequest.getRequestModeration())
                 .title(updateEventUserRequest.getTitle())
                 .build();
@@ -67,7 +67,7 @@ public class EventMapper {
                 .initiator(event.getInitiator() != null ? UserMapper.toShortDto(event.getInitiator()) : null)
                 .location(event.getLocation())
                 .paid(event.isPaid())
-                .participationLimit(event.getParticipationLimit())
+                .participantLimit(event.getParticipantLimit())
                 .publishedOn(event.getPublishedOn() != null ? FORMATTER.format(event.getPublishedOn()) : "")
                 .requestModeration(event.isRequestModeration())
                 .state(event.getState().toString())
