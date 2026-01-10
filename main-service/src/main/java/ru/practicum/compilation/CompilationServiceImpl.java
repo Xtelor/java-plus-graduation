@@ -9,9 +9,9 @@ import ru.practicum.StatsClient;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.event.Event;
 import ru.practicum.event.EventMapper;
-import ru.practicum.event.EventRepository;
 import ru.practicum.event.ParticipationRequestRepository;
 import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.NotFoundException;
 
 import java.time.LocalDateTime;
