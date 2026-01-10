@@ -40,7 +40,6 @@ public class StatsClient {
                 .ip(ip)
                 .timestamp(FORMATTER.format(timestamp))
                 .build();
-
         try {
             restTemplate.postForEntity(serverUrl + "/hit", hitDto, Void.class);
             log.debug("Информация сохранена: app={}, uri={}, ip={}", app, uri, ip);
@@ -53,8 +52,8 @@ public class StatsClient {
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
                                        List<String> uris, Boolean unique) {
         String url = UriComponentsBuilder.fromHttpUrl(serverUrl + "/stats")
-                .queryParam("start", encode(start))
-                .queryParam("end", encode(end))
+                .queryParam("start", start == null ? null : encode(start))
+                .queryParam("end", end == null ? null : encode(end))
                 .queryParamIfPresent("uris", Optional.ofNullable(uris)
                         .filter(list -> !list.isEmpty()))
                 .queryParamIfPresent("unique", Optional.ofNullable(unique))

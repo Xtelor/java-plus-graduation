@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
 
     @Override
     @Transactional
@@ -33,11 +32,11 @@ public class UserServiceImpl implements UserService {
             );
         }
 
-        User user = userMapper.toEntity(newUserRequest);
+        User user = UserMapper.toEntity(newUserRequest);
         User savedUser = userRepository.save(user);
         log.info("Пользователь создан с ID: {}", savedUser.getId());
 
-        return userMapper.toDto(savedUser);
+        return UserMapper.toDto(savedUser);
     }
 
     @Override
@@ -53,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
         log.info("Найдено {} пользователей", users.size());
         return users.stream()
-                .map(userMapper::toDto)
+                .map(UserMapper::toDto)
                 .collect(Collectors.toList());
     }
 

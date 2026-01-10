@@ -14,8 +14,8 @@ public class EndpointHitController {
 
     @GetMapping("/stats")
     public List<ViewStatsDto> getAll(
-            @RequestParam String start,
-            @RequestParam String end,
+            @RequestParam(required = false) String start,
+            @RequestParam(required = false) String end,
             @RequestParam(required = false) String[] uris,
             @RequestParam(defaultValue = "false") Boolean unique) {
         return endpointHitService.getStatistics(start, end, uris, unique);

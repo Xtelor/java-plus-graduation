@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final CategoryMapper categoryMapper;
 
     @Override
     @Transactional
@@ -29,11 +28,11 @@ public class CategoryServiceImpl implements CategoryService {
         // Проверка уникальности имени
         checkNameUniqueness(newCategoryDto.getName());
 
-        Category category = categoryMapper.toEntity(newCategoryDto);
+        Category category = CategoryMapper.toEntity(newCategoryDto);
         Category savedCategory = categoryRepository.save(category);
         log.info("Категория создана с ID: {}", savedCategory.getId());
 
-        return categoryMapper.toDto(savedCategory);
+        return CategoryMapper.toDto(savedCategory);
     }
 
     @Override
@@ -53,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category updatedCategory = categoryRepository.save(category);
         log.info("Категория с ID {} успешно обновлена", categoryId);
 
-        return categoryMapper.toDto(updatedCategory);
+        return CategoryMapper.toDto(updatedCategory);
     }
 
     @Override
@@ -79,7 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Найдено {} категорий", categories.size());
 
         return categories.stream()
-                .map(categoryMapper::toDto)
+                .map(CategoryMapper::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -88,7 +87,7 @@ public class CategoryServiceImpl implements CategoryService {
         log.info("Получение категории по ID: {}", categoryId);
 
         Category category = getCategoryOrThrow(categoryId);
-        return categoryMapper.toDto(category);
+        return CategoryMapper.toDto(category);
     }
 
     private Category getCategoryOrThrow(Long categoryId) {
