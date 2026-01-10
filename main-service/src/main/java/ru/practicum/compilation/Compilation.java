@@ -3,6 +3,7 @@ package ru.practicum.compilation;
 import lombok.*;
 
 import jakarta.persistence.*;
+import ru.practicum.event.Event;
 
 import java.util.Set;
 
