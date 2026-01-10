@@ -1,33 +1,27 @@
 package ru.practicum.event;
 
+import jakarta.servlet.http.HttpServletRequest;
 import ru.practicum.event.dto.*;
-import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.request.dto.EventRequestStatusUpdateResult;
-import ru.practicum.request.dto.ParticipationRequestDto;
+import ru.practicum.event.params.AdminEventsParam;
+import ru.practicum.event.params.PublicEventsParam;
 
 import java.util.List;
 
 public interface EventService {
 
-    // Создание события
     EventFullDto createEvent(NewEventDto NewEventDto, Long initiatorId);
 
-    // Получение полной информации о событии
-    EventFullDto getEventByInitiator(Long initiatorId, Long eventId);
+    EventFullDto updateEventUser(UpdateEventUserRequest updateEventUserRequest, Long initiatorId, Long eventId);
 
-    // Получение заявок на участие в событии текущего пользователя
-    List<ParticipationRequestDto> getEventRequests(Long userId, Long eventId);
+    EventFullDto updateEventByAdmin(UpdateEventAdminRequest updateEventAdminRequest, Long eventId);
 
-    // Изменение статуса заявок на участие в событии текущего пользователя
-    EventRequestStatusUpdateResult changeRequestStatus(Long userId,
-                                                       Long eventId,
-                                                       EventRequestStatusUpdateRequest dto);
+    List<EventShortDto> findByInitiatorId(Long initiatorId, int from, int size);
 
-    // Редактирование события
-    EventFullDto updateEventByInitiator(Long initiatorId,
-                                        Long eventId,
-                                        UpdateEventUserRequest request);
+    List<EventShortDto> getEventsPublic(PublicEventsParam publicEventsParam, String ip, String uri);
 
-    // Редактирование события администратором
-    EventFullDto updateEventByAdmin(Long eventId, UpdateEventAdminRequest request);
+    List<EventFullDto> searchEventsByAdmin(AdminEventsParam adminEventsParam);
+
+    EventFullDto findById(Long eventId, String ip, String uri);
+
+    EventFullDto findByIdAndInitiatorId(Long initiatorId, Long eventId);
 }

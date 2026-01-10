@@ -16,8 +16,4 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "LEFT JOIN FETCH e.initiator " +
             "WHERE e.id IN :ids")
     List<Event> findAllByIdIn(@Param("ids") Set<Long> ids);
-
-    Optional<Event> findByIdAndInitiatorId(Long id, Long initiatorId);
-
-    List<Event> findAllByInitiatorId(Long initiatorId, Pageable pageable);
 }

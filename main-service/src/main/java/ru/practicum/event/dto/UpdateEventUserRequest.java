@@ -1,11 +1,15 @@
 package ru.practicum.event.dto;
 
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.event.Location;
+import ru.practicum.event.UserStateAction;
 
 @Data
 @Builder
@@ -20,7 +24,7 @@ public class UpdateEventUserRequest implements UpdateEventRequest {
     private Long category;
 
     // Новое описание
-    @Size(min = 20, max = 7000)
+    @Size(min = 20, max = 7000, message = "Описание события должно содержать от 20 до 7000 символов")
     private String description;
 
     // Новые дата и время
@@ -33,15 +37,15 @@ public class UpdateEventUserRequest implements UpdateEventRequest {
     private Boolean paid;
 
     // Новый лимит пользователей
-    private Integer participantLimit;
+    @PositiveOrZero(message = "Число участников должно быть неотрицательным")
+    private Integer participationLimit = 0;
 
     // Пре-модерация заявок на участие: true - требуется модерация
     private Boolean requestModeration;
 
-    // Изменение состояния события
-    private String stateAction;
+    public UserStateAction stateAction;
 
     // Новый заголовок
-    @Size(min = 3, max = 120)
+    @Size(min = 3, max = 120, message = "Заголовок события должен содержать от 3 до 120 символов")
     private String title;
 }

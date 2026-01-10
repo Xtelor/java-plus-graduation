@@ -18,17 +18,25 @@ public class EndpointHitService {
             .withZone(ZoneOffset.UTC);
 
     public List<ViewStatsDto> getStatistics(String start, String end, String[] uris, Boolean unique) {
-        log.info("Получение статистика по посещениям с параметрами start={}, end={}, uris={}, unique={}", start, end, uris, unique);
+        log.info("Получение статистики по посещениям с параметрами start={}, end={}, uris={}, unique={}", start, end, uris, unique);
+        Instant startTime = null;
+        if (start != null && !start.isEmpty()) {
+            startTime = Instant.from(FORMATTER.parse(start));
+        }
+        Instant endTime = null;
+        if (end != null && !end.isEmpty()) {
+            endTime = Instant.from(FORMATTER.parse(end));
+        }
         if (unique == true) {
-            return endpointHitRepository.findStatisticsUniqueIp(Instant.from(FORMATTER.parse(start)), Instant.from(FORMATTER.parse(end)), uris);
+            return endpointHitRepository.findStatisticsUniqueIp(startTime, endTime, uris);
         } else {
-            return endpointHitRepository.findStatistics(Instant.from(FORMATTER.parse(start)), Instant.from(FORMATTER.parse(end)), uris);
+            return endpointHitRepository.findStatistics(startTime, endTime, uris);
         }
     }
 
     public void create(EndpointHitDto endpointHitDto) {
-        log.info("Сохранение информации о запросе к эндпоинту endpointHitDto={}", endpointHitDto);
         EndpointHit endpointHit = EndpointHitMapper.toEndpointHit(endpointHitDto);
         endpointHitRepository.save(endpointHit);
+        log.info("Сохранение информации о запросе к эндпоинту endpointHitDto={}", endpointHitDto);
     }
 }

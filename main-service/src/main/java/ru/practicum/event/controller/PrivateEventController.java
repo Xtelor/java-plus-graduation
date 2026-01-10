@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.EventService;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.dto.EventFullDto;
+import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
-import ru.practicum.request.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.request.dto.EventRequestStatusUpdateResult;
-import ru.practicum.request.dto.ParticipationRequestDto;
 
 import java.util.List;
 
@@ -33,41 +31,29 @@ public class PrivateEventController {
         return eventService.createEvent(newEventDto, initiatorId);
     }
 
-    // Получение полной информации о событии
-    @GetMapping("/{eventId}")
-    public EventFullDto getEventByInitiator(@PathVariable Long userId,
-                                            @PathVariable Long eventId) {
-        log.info("GET /users/{}/events/{} - получение события", userId, eventId);
-
-        return eventService.getEventByInitiator(userId, eventId);
-    }
-
-    // Изменение события
     @PatchMapping("/{eventId}")
-    public EventFullDto updateEventByInitiator(@PathVariable Long userId,
-                                               @PathVariable Long eventId,
-                                               @Valid @RequestBody UpdateEventUserRequest request) {
-        log.info("PATCH /users/{}/events/{} - обновление события", userId, eventId);
-
-        return eventService.updateEventByInitiator(userId, eventId, request);
+    @ResponseStatus(HttpStatus.OK)
+    public EventFullDto updateEvent(@Valid @RequestBody UpdateEventUserRequest updateEventUserRequest,
+                                    @PathVariable("userId") Long initiatorId,
+                                    @PathVariable Long eventId) {
+        log.info("PATCH запрос на обновление события с id: , добавленного текущим пользователем {}", eventId);
+        return eventService.updateEventUser(updateEventUserRequest, initiatorId, eventId);
     }
 
-    // Получение заявок на участие в событии
-    @GetMapping("/{eventId}/requests")
-    public List<ParticipationRequestDto> getEventRequests(@PathVariable Long userId,
-                                                          @PathVariable Long eventId) {
-        log.info("GET /users/{}/events/{}/requests - получение заявок", userId, eventId);
-
-        return eventService.getEventRequests(userId, eventId);
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<EventShortDto> findByInitiatorId(@PathVariable("userId") Long initiatorId,
+                                                 @RequestParam(defaultValue = "0") int from,
+                                                 @RequestParam (defaultValue = "10") int size) {
+        log.info("Получение событий, добавленных текущим пользователем");
+        return eventService.findByInitiatorId(initiatorId, from, size);
     }
 
-    // Одобрение/Отклонение заявок
-    @PatchMapping("/{eventId}/requests")
-    public EventRequestStatusUpdateResult changeRequestStatus(@PathVariable Long userId,
-                                                              @PathVariable Long eventId,
-                                                              @RequestBody EventRequestStatusUpdateRequest dto) {
-        log.info("PATCH /users/{}/events/{}/requests - изменение статуса заявок", userId, eventId);
-
-        return eventService.changeRequestStatus(userId, eventId, dto);
+    @GetMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventFullDto findByIdAndInitiatorId(@PathVariable("userId") Long initiatorId,
+                                               @PathVariable Long eventId) {
+        log.info("Получение подробной информации о событии, добавленном текущим пользователем");
+        return eventService.findByIdAndInitiatorId(initiatorId, eventId);
     }
 }

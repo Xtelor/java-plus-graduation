@@ -1,6 +1,5 @@
 package ru.practicum.event;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.category.CategoryMapper;
 import ru.practicum.event.dto.EventFullDto;
@@ -13,18 +12,12 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 @Component
-@RequiredArgsConstructor
 public class EventMapper {
-
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneOffset.UTC);
 
-    private final CategoryMapper categoryMapper;
-    private final UserMapper userMapper;
-
-
-    public Event toEntity(NewEventDto newEventDto) {
+    public static Event toEntity(NewEventDto newEventDto) {
         return Event.builder()
                 .annotation(newEventDto.getAnnotation())
                 .description(newEventDto.getDescription())
@@ -37,44 +30,35 @@ public class EventMapper {
                 .build();
     }
 
-    public EventShortDto toShortDto(Event event) {
-        if (event == null) {
-            return null;
-        }
-
+    public static EventShortDto toShortDto(Event event) {
         return EventShortDto.builder()
-                .id(event.getId())
-                .title(event.getTitle())
                 .annotation(event.getAnnotation())
-                .category(categoryMapper.toDto(event.getCategory()))
+                .category(event.getCategory() != null ? CategoryMapper.toDto(event.getCategory()) : null)
+                .eventDate(event.getEventDate() != null ? FORMATTER.format(event.getEventDate()) : "")
+                .id(event.getId())
+                .initiator(event.getInitiator() != null ? UserMapper.toShortDto(event.getInitiator()) : null)
                 .paid(event.getPaid())
-                .initiator(userMapper.toShortDto(event.getInitiator()))
-                .eventDate(event.getEventDate().format(FORMATTER))
-                .confirmedRequests(0L)
-                .views(event.getViews())
+                .title(event.getTitle())
                 .build();
     }
 
-    public EventFullDto toFullDto(Event event) {
-        if (event == null) return null;
-
+    public static EventFullDto toFullDto(Event event) {
         return EventFullDto.builder()
-                .id(event.getId())
-                .title(event.getTitle())
                 .annotation(event.getAnnotation())
+                .category(event.getCategory() != null ? CategoryMapper.toDto(event.getCategory()) : null)
+                .createdOn(FORMATTER.format(event.getCreatedOn()))
                 .description(event.getDescription())
-                .paid(event.getPaid())
-                .requestModeration(event.getRequestModeration())
-                .participationLimit(event.getParticipationLimit())
-                .eventDate(event.getEventDate().format(FORMATTER))
-                .createdOn(event.getCreatedOn().format(FORMATTER))
-                .publishedOn(event.getPublishedOn() != null ? event.getPublishedOn().format(FORMATTER) : null)
-                .state(event.getState().toString())
-                .views(event.getViews())
-                .confirmedRequests(0L)
-                .category(categoryMapper.toDto(event.getCategory()))
-                .initiator(userMapper.toShortDto(event.getInitiator()))
+                .eventDate(event.getEventDate() != null ? FORMATTER.format(event.getEventDate()) : "")
+                .id(event.getId())
+                .initiator(event.getInitiator() != null ? UserMapper.toShortDto(event.getInitiator()) : null)
                 .location(event.getLocation())
+                .paid(event.getPaid())
+                .participationLimit(event.getParticipationLimit())
+                .publishedOn(event.getPublishedOn() != null ? FORMATTER.format(event.getPublishedOn()) : "")
+                .requestModeration(event.getRequestModeration())
+                .state(event.getState().toString())
+                .title(event.getTitle())
+                .views(0L)
                 .build();
     }
 }

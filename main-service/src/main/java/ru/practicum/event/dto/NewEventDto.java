@@ -15,7 +15,7 @@ import ru.practicum.event.Location;
 public class NewEventDto {
 
     @NotBlank(message = "Аннотация события не может быть пустой")
-    @Size(min = 20, max = 2000, message = "Аннотация должна содержать от 2 до 2000 символов")
+    @Size(min = 20, max = 2000, message = "Аннотация должна содержать от 20 до 2000 символов")
     private String annotation;
 
     @NotNull(message = "Категория не может быть пустой")
