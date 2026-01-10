@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.event.Event;
-import ru.practicum.event.EventRepository;
 import ru.practicum.event.State;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;

@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.event.SortEvents;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -18,8 +18,6 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ConditionsNotMetException;
 import ru.practicum.event.dto.*;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.request.mapper.RequestMapper;
-import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -38,11 +36,9 @@ public class EventServiceImpl implements EventService {
 
     private final StatsClient statsClient;
     private final EventRepository eventRepository;
-    private final EventMapper eventMapper;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
-    private final RequestRepository requestRepository;
-    private final RequestMapper requestMapper;
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneOffset.UTC);
@@ -107,7 +103,7 @@ public class EventServiceImpl implements EventService {
         if (initiatorId == null || !userRepository.existsById(initiatorId)) {
             throw new NotFoundException("Инициатор события не найден");
         }
-        if (event.getInitiator().getId() != initiatorId) {
+        if (Objects.equals(event.getInitiator().getId(), initiatorId)) {
             throw new NotFoundException("Текущий пользователь не является инициатором события");
         }
         EventFullDto eventFullDto = EventMapper.toFullDto(event);
@@ -142,7 +138,7 @@ public class EventServiceImpl implements EventService {
         if (oldEvent.getState() != State.CANCELED && oldEvent.getState() != State.PENDING) {
             throw new ConditionsNotMetException("Изменять можно только отмененные события или события в состоянии ожидания модерации");
         }
-        if (oldEvent.getInitiator().getId() != initiatorId) {
+        if (Objects.equals(oldEvent.getInitiator().getId(), initiatorId)) {
             throw new NotFoundException("Изменить событие может только его инициатор");
         }
         if (updateEventUserRequest.getStateAction() == UserStateAction.CANCEL_REVIEW) {
@@ -280,10 +276,9 @@ public class EventServiceImpl implements EventService {
         }
         statsClient.hit("ewm-main-service", uri, ip, LocalDateTime.now());
         if (publicEventsParam.getSort() == SortEvents.VIEWS) {
-            List<EventShortDto> eventsSortedByViews = eventsShortDto.stream()
+            return eventsShortDto.stream()
                     .sorted(Comparator.comparing(EventShortDto::getViews).reversed())
                     .collect(Collectors.toList());
-            return eventsSortedByViews;
         }
         return eventsShortDto;
     }
@@ -337,12 +332,11 @@ public class EventServiceImpl implements EventService {
                         currentEvent -> "/events/" + currentEvent.getId(),
                         Event::getId)
                 );
-        Map<Long, Long> views = statsClient.getStats(null, LocalDateTime.now(), uris.keySet().stream().toList(), false)
+        return statsClient.getStats(null, LocalDateTime.now(), uris.keySet().stream().toList(), false)
                 .stream()
                 .collect(Collectors.toMap(
                         currentViewStatDto -> uris.get(currentViewStatDto.getUri()),
                         ViewStatsDto::getHits)
                 );
-        return views;
     }
 }

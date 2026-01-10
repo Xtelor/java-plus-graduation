@@ -2,8 +2,6 @@ package ru.practicum.event.dto;
 
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +13,7 @@ import ru.practicum.event.UserStateAction;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateEventUserRequest implements UpdateEventRequest {
+public class UpdateEventUserRequest {
     // Новая аннотация
     @Size(min = 20, max = 2000)
     private String annotation;
