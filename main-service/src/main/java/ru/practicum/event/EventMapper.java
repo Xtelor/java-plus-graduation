@@ -1,18 +1,15 @@
 package ru.practicum.event;
 
-import org.springframework.stereotype.Component;
 import ru.practicum.category.CategoryMapper;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
-import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.user.UserMapper;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-@Component
 public class EventMapper {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -24,23 +21,10 @@ public class EventMapper {
                 .description(newEventDto.getDescription())
                 .eventDate(LocalDateTime.from(FORMATTER.parse(newEventDto.getEventDate())))
                 .location(newEventDto.getLocation())
-                .paid(newEventDto.isPaid())
+                .paid(newEventDto.getPaid())
                 .participationLimit(newEventDto.getParticipationLimit())
-                .requestModeration(newEventDto.isRequestModeration())
+                .requestModeration(newEventDto.getRequestModeration())
                 .title(newEventDto.getTitle())
-                .build();
-    }
-
-    public static Event toEntity(UpdateEventUserRequest updateEventUserRequest) {
-        return Event.builder()
-                .annotation(updateEventUserRequest.getAnnotation())
-                .description(updateEventUserRequest.getDescription())
-                .eventDate(LocalDateTime.from(FORMATTER.parse(updateEventUserRequest.getEventDate())))
-                .location(updateEventUserRequest.getLocation())
-                .paid(updateEventUserRequest.getPaid())
-                .participationLimit(updateEventUserRequest.getParticipationLimit())
-                .requestModeration(updateEventUserRequest.getRequestModeration())
-                .title(updateEventUserRequest.getTitle())
                 .build();
     }
 
@@ -51,7 +35,7 @@ public class EventMapper {
                 .eventDate(event.getEventDate() != null ? FORMATTER.format(event.getEventDate()) : "")
                 .id(event.getId())
                 .initiator(event.getInitiator() != null ? UserMapper.toShortDto(event.getInitiator()) : null)
-                .paid(event.isPaid())
+                .paid(event.getPaid())
                 .title(event.getTitle())
                 .build();
     }
@@ -66,12 +50,14 @@ public class EventMapper {
                 .id(event.getId())
                 .initiator(event.getInitiator() != null ? UserMapper.toShortDto(event.getInitiator()) : null)
                 .location(event.getLocation())
-                .paid(event.isPaid())
+                .paid(event.getPaid())
                 .participationLimit(event.getParticipationLimit())
                 .publishedOn(event.getPublishedOn() != null ? FORMATTER.format(event.getPublishedOn()) : "")
-                .requestModeration(event.isRequestModeration())
+                .requestModeration(event.getRequestModeration())
                 .state(event.getState().toString())
                 .title(event.getTitle())
+                .views(event.getViews())
+                .confirmedRequests(0L)
                 .build();
     }
 }

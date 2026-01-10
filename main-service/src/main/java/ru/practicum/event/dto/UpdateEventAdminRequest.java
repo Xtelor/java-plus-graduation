@@ -2,6 +2,9 @@ package ru.practicum.event.dto;
 
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import ru.practicum.event.Location;
@@ -9,6 +12,9 @@ import ru.practicum.event.AdminStateAction;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateEventAdminRequest {
 
     @Size(min = 2, max = 2000, message = "Аннотация должна содержать от 2 до 2000 символов")

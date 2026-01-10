@@ -78,7 +78,7 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
 
         return PageableExecutionUtils.getPage(content, pageable,
                 countQuery::fetchOne);
-    };
+    }
 
     @Override
     public Page<Event> searchEventsByAdmin(AdminEventsParam adminEventsParam, Pageable pageable) {
@@ -122,5 +122,5 @@ public class EventRepositoryImpl implements EventRepositoryCustom {
 
         return PageableExecutionUtils.getPage(content, pageable,
                 countQuery::fetchOne);
-    };
+    }
 }

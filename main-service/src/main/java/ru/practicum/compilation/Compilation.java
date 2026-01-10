@@ -20,7 +20,7 @@ public class Compilation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = false, length = 50)
+    @Column(name = "title", nullable = false, length = 50, unique = true)
     private String title;
 
     @Column(name = "pinned", nullable = false)
@@ -28,7 +28,7 @@ public class Compilation {
 
     @ManyToMany
     @JoinTable(
-            name = "compilation_events",
+            name = "compilations_events",
             joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id")
     )
