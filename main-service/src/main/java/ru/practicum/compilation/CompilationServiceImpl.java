@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.StatsClient;
 import ru.practicum.ViewStatsDto;
+import ru.practicum.event.Event;
 import ru.practicum.event.EventMapper;
 import ru.practicum.event.EventRepository;
 import ru.practicum.event.ParticipationRequestRepository;
+import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.exception.NotFoundException;
 
 import java.time.LocalDateTime;
@@ -173,7 +175,7 @@ public class CompilationServiceImpl implements CompilationService {
                 .collect(Collectors.toList());
     }
 
-    private Set<Object> convertEventsToShortDtos(List<Event> events) {
+    private Set<EventShortDto> convertEventsToShortDtos(List<Event> events) {
         if (events.isEmpty()) {
             return Collections.emptySet();
         }
