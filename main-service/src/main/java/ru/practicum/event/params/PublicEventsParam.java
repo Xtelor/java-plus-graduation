@@ -12,7 +12,7 @@ public class PublicEventsParam {
 
     private String text;
     private Long[] categories;
-    private Boolean Paid;
+    private Boolean paid;
     private String rangeStart;
     private String rangeEnd;
     private Boolean onlyAvailable;
