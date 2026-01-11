@@ -22,14 +22,8 @@ public class EndpointHitService {
 
     public List<ViewStatsDto> getStatistics(String start, String end, String[] uris, Boolean unique) {
         log.info("Получение статистики по посещениям с параметрами start={}, end={}, uris={}, unique={}", start, end, uris, unique);
-        Instant startTime = null;
-        if (start != null && !start.isEmpty()) {
-            startTime = Instant.from(FORMATTER.parse(start));
-        }
-        Instant endTime = null;
-        if (end != null && !end.isEmpty()) {
-            endTime = Instant.from(FORMATTER.parse(end));
-        }
+        Instant startTime = Instant.from(FORMATTER.parse(start));
+        Instant endTime = Instant.from(FORMATTER.parse(end));
         if (startTime.isAfter(endTime)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Дата начала диапазона не может быть позже даты окончания");
