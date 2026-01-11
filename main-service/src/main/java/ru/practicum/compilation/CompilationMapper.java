@@ -1,12 +1,10 @@
 package ru.practicum.compilation;
 
-import org.springframework.stereotype.Component;
 import ru.practicum.event.dto.EventShortDto;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Component
 public class CompilationMapper {
 
     public static CompilationDto toDto(Compilation compilation, Set<EventShortDto> events) {
