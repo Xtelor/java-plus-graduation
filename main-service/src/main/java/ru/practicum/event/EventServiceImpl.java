@@ -126,7 +126,7 @@ public class EventServiceImpl implements EventService {
         EventFullDto eventFullDto = EventMapper.toFullDto(event);
         List<String> uris = new ArrayList<>();
         uris.add("/events/" + eventId);
-        Long views = statsClient.getStats(null, null, uris, true)
+        Long views = statsClient.getStats(LocalDateTime.now().minusYears(1), LocalDateTime.now().plusDays(1), uris, true)
                 .stream()
                 .map(ViewStatsDto::getHits)
                 .findFirst()
@@ -202,7 +202,7 @@ public class EventServiceImpl implements EventService {
         EventFullDto eventFullDto = EventMapper.toFullDto(updatedEvent);
         List<String> uris = new ArrayList<>();
         uris.add("/events/" + eventId);
-        Long views = statsClient.getStats(null, null, uris, true)
+        Long views = statsClient.getStats(LocalDateTime.now().minusYears(1), LocalDateTime.now().plusDays(1), uris, true)
                 .stream()
                 .map(ViewStatsDto::getHits)
                 .findFirst()
@@ -281,7 +281,7 @@ public class EventServiceImpl implements EventService {
         EventFullDto eventFullDto = EventMapper.toFullDto(updatedEvent);
         List<String> uris = new ArrayList<>();
         uris.add("/events/" + eventId);
-        Long views = statsClient.getStats(null, null, uris, true)
+        Long views = statsClient.getStats(LocalDateTime.now().minusYears(1), LocalDateTime.now().plusDays(1), uris, true)
                 .stream()
                 .map(ViewStatsDto::getHits)
                 .findFirst()
@@ -380,7 +380,7 @@ public class EventServiceImpl implements EventService {
         EventFullDto eventFullDto = EventMapper.toFullDto(event);
         List<String> uris = new ArrayList<>();
         uris.add("/events/" + eventId);
-        Long views = statsClient.getStats(null, null, uris, true)
+        Long views = statsClient.getStats(LocalDateTime.now().minusYears(1), LocalDateTime.now().plusDays(1), uris, true)
                 .stream()
                 .map(ViewStatsDto::getHits)
                 .findFirst()
@@ -406,7 +406,7 @@ public class EventServiceImpl implements EventService {
                         currentEvent -> "/events/" + currentEvent.getId(),
                         Event::getId)
                 );
-        return statsClient.getStats(null, LocalDateTime.now(), uris.keySet().stream().toList(), true)
+        return statsClient.getStats(LocalDateTime.now().minusYears(1), LocalDateTime.now().plusDays(1), uris.keySet().stream().toList(), true)
                 .stream()
                 .collect(Collectors.toMap(
                         currentViewStatDto -> uris.get(currentViewStatDto.getUri()),

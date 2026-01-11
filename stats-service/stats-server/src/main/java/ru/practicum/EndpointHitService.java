@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -22,14 +24,10 @@ public class EndpointHitService {
 
     public List<ViewStatsDto> getStatistics(String start, String end, String[] uris, Boolean unique) {
         log.info("Получение статистики по посещениям с параметрами start={}, end={}, uris={}, unique={}", start, end, uris, unique);
-        Instant startTime = null;
-        if (start != null && !start.isEmpty()) {
-            startTime = Instant.from(FORMATTER.parse(start));
-        }
-        Instant endTime = null;
-        if (end != null && !end.isEmpty()) {
-            endTime = Instant.from(FORMATTER.parse(end));
-        }
+        String decodedStart = URLDecoder.decode(start, StandardCharsets.UTF_8);
+        String decodedEnd = URLDecoder.decode(end, StandardCharsets.UTF_8);
+        Instant startTime = Instant.from(FORMATTER.parse(decodedStart));
+        Instant endTime = Instant.from(FORMATTER.parse(decodedEnd));
         if (startTime.isAfter(endTime)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Дата начала диапазона не может быть позже даты окончания");
