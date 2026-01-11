@@ -2,7 +2,10 @@ package ru.practicum;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +29,10 @@ public class EndpointHitService {
         Instant endTime = null;
         if (end != null && !end.isEmpty()) {
             endTime = Instant.from(FORMATTER.parse(end));
+        }
+        if (startTime.isAfter(endTime)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Дата начала диапазона не может быть позже даты окончания");
         }
         if (unique == true) {
             return endpointHitRepository.findStatisticsUniqueIp(startTime, endTime, uris);
