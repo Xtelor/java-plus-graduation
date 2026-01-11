@@ -28,7 +28,6 @@ public class CompilationServiceImpl implements CompilationService {
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
     private final StatsClient statsClient;
-    private final EventMapper eventMapper;
 
     @Override
     @Transactional
@@ -177,7 +176,7 @@ public class CompilationServiceImpl implements CompilationService {
     private EventShortDto createEventShortDtoWithStats(Event event,
                                                        Map<Long, Long> viewsMap,
                                                        Map<Long, Long> confirmedRequestsMap) {
-        EventShortDto dto = eventMapper.toShortDto(event);
+        EventShortDto dto = EventMapper.toShortDto(event);
         if (dto != null) {
             dto.setViews(viewsMap.getOrDefault(event.getId(), 0L));
             dto.setConfirmedRequests(confirmedRequestsMap.getOrDefault(event.getId(), 0L));
