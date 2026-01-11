@@ -1,15 +1,13 @@
 package ru.practicum.compilation;
 
-import org.springframework.stereotype.Component;
 import ru.practicum.event.dto.EventShortDto;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Component
 public class CompilationMapper {
 
-    public CompilationDto toDto(Compilation compilation, Set<EventShortDto> events) {
+    public static CompilationDto toDto(Compilation compilation, Set<EventShortDto> events) {
         return CompilationDto.builder()
                 .id(compilation.getId())
                 .title(compilation.getTitle())
@@ -18,7 +16,7 @@ public class CompilationMapper {
                 .build();
     }
 
-    public Compilation toEntity(NewCompilationDto newCompilationDto) {
+    public static Compilation toEntity(NewCompilationDto newCompilationDto) {
         return Compilation.builder()
                 .title(newCompilationDto.getTitle())
                 .pinned(newCompilationDto.getPinned() != null ?

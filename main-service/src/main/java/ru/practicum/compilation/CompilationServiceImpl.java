@@ -29,14 +29,13 @@ public class CompilationServiceImpl implements CompilationService {
     private final RequestRepository requestRepository;
     private final StatsClient statsClient;
     private final EventMapper eventMapper;
-    private final CompilationMapper compilationMapper;
 
     @Override
     @Transactional
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
         log.info("Создание подборки: {}", newCompilationDto.getTitle());
 
-        Compilation compilation = compilationMapper.toEntity(newCompilationDto);
+        Compilation compilation = CompilationMapper.toEntity(newCompilationDto);
 
         if (newCompilationDto.getEvents() != null && !newCompilationDto.getEvents().isEmpty()) {
             Set<Event> events = findEventsByIds(newCompilationDto.getEvents());
@@ -118,7 +117,7 @@ public class CompilationServiceImpl implements CompilationService {
             events = convertEventsToShortDtos(new ArrayList<>(compilation.getEvents()));
         }
 
-        return compilationMapper.toDto(compilation, events);
+        return CompilationMapper.toDto(compilation, events);
     }
 
     private List<CompilationDto> convertCompilationsToDtoList(List<Compilation> compilations) {
@@ -153,7 +152,7 @@ public class CompilationServiceImpl implements CompilationService {
                     }
 
                     // Вызываем маппер
-                    return compilationMapper.toDto(compilation, events);
+                    return CompilationMapper.toDto(compilation, events);
                 })
                 .collect(Collectors.toList());
     }

@@ -1,8 +1,5 @@
 package ru.practicum.category;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class CategoryMapper {
 
     public static CategoryDto toDto(Category category) {

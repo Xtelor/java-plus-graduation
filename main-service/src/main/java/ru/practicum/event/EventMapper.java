@@ -1,9 +1,11 @@
 package ru.practicum.event;
 
+import org.springframework.stereotype.Component;
 import ru.practicum.category.CategoryMapper;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.user.UserMapper;
 
 import java.time.LocalDateTime;
@@ -22,9 +24,22 @@ public class EventMapper {
                 .eventDate(LocalDateTime.from(FORMATTER.parse(newEventDto.getEventDate())))
                 .location(newEventDto.getLocation())
                 .paid(newEventDto.getPaid())
-                .participationLimit(newEventDto.getParticipationLimit())
+                .participantLimit(newEventDto.getParticipantLimit())
                 .requestModeration(newEventDto.getRequestModeration())
                 .title(newEventDto.getTitle())
+                .build();
+    }
+
+    public static Event toEntity(UpdateEventUserRequest updateEventUserRequest) {
+        return Event.builder()
+                .annotation(updateEventUserRequest.getAnnotation())
+                .description(updateEventUserRequest.getDescription())
+                .eventDate(LocalDateTime.from(FORMATTER.parse(updateEventUserRequest.getEventDate())))
+                .location(updateEventUserRequest.getLocation())
+                .paid(updateEventUserRequest.getPaid())
+                .participantLimit(updateEventUserRequest.getParticipantLimit())
+                .requestModeration(updateEventUserRequest.getRequestModeration())
+                .title(updateEventUserRequest.getTitle())
                 .build();
     }
 
@@ -51,13 +66,11 @@ public class EventMapper {
                 .initiator(event.getInitiator() != null ? UserMapper.toShortDto(event.getInitiator()) : null)
                 .location(event.getLocation())
                 .paid(event.getPaid())
-                .participationLimit(event.getParticipationLimit())
+                .participantLimit(event.getParticipantLimit())
                 .publishedOn(event.getPublishedOn() != null ? FORMATTER.format(event.getPublishedOn()) : "")
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState().toString())
                 .title(event.getTitle())
-                .views(event.getViews())
-                .confirmedRequests(0L)
                 .build();
     }
 }

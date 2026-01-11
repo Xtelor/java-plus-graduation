@@ -14,8 +14,9 @@ import ru.practicum.event.UserStateAction;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateEventUserRequest {
+
     // Новая аннотация
-    @Size(min = 20, max = 2000)
+    @Size(min = 20, max = 2000, message = "Аннотация должна содержать от 20 до 2000 символов")
     private String annotation;
 
     // Новая категория
@@ -36,7 +37,7 @@ public class UpdateEventUserRequest {
 
     // Новый лимит пользователей
     @PositiveOrZero(message = "Число участников должно быть неотрицательным")
-    private Integer participationLimit = 0;
+    private Integer participantLimit = 0;
 
     // Пре-модерация заявок на участие: true - требуется модерация
     private Boolean requestModeration;

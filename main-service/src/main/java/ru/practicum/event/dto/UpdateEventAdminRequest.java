@@ -17,7 +17,7 @@ import ru.practicum.event.AdminStateAction;
 @AllArgsConstructor
 public class UpdateEventAdminRequest {
 
-    @Size(min = 2, max = 2000, message = "Аннотация должна содержать от 2 до 2000 символов")
+    @Size(min = 20, max = 2000, message = "Аннотация должна содержать от 2 до 2000 символов")
     private String annotation;
 
     private Long category;
@@ -32,7 +32,7 @@ public class UpdateEventAdminRequest {
     private Boolean paid;
 
     @PositiveOrZero(message = "Число участников должно быть неотрицательным")
-    private Integer participationLimit = 0;
+    private Integer participantLimit = 0;
 
     private Boolean requestModeration;
 
