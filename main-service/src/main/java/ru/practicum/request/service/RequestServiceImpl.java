@@ -31,7 +31,6 @@ public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
-    private final RequestMapper requestMapper;
 
     // Добавление запроса на участие в событии
     @Override
@@ -57,7 +56,7 @@ public class RequestServiceImpl implements RequestService {
                 .status(RequestStatus.PENDING)
                 .build();
 
-        if (!event.getRequestModeration() || event.getParticipationLimit() == 0) {
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             log.info("Заявка подтверждена автоматически (лимит = 0 или модерация отключена): eventId = {}", eventId);
             request.setStatus(RequestStatus.CONFIRMED);
         }
@@ -65,7 +64,7 @@ public class RequestServiceImpl implements RequestService {
         Request savedRequest = requestRepository.save(request);
         log.info("Запрос успешно создан: requestId = {}, status = {}", savedRequest.getId(), savedRequest.getStatus());
 
-        return requestMapper.toDto(savedRequest);
+        return RequestMapper.toDto(savedRequest);
     }
 
     // Отмена запроса на участие в событии
@@ -84,7 +83,7 @@ public class RequestServiceImpl implements RequestService {
         Request savedRequest = requestRepository.save(request);
         log.info("Запрос requestId = {} переведен в статус CANCELED", requestId);
 
-        return requestMapper.toDto(savedRequest);
+        return RequestMapper.toDto(savedRequest);
     }
 
     // Получение списка запросов текущего пользователя на участие в чужих событиях
@@ -96,7 +95,7 @@ public class RequestServiceImpl implements RequestService {
         findUserById(userId);
 
         List<ParticipationRequestDto> requests = requestRepository.findAllByRequesterId(userId).stream()
-                .map(requestMapper::toDto)
+                .map(RequestMapper::toDto)
                 .collect(Collectors.toList());
 
         log.info("Найдено {} запросов для userId = {}", requests.size(), userId);
@@ -126,11 +125,11 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии.");
         }
 
-        if (event.getParticipationLimit() > 0) {
+        if (event.getParticipantLimit() > 0) {
             Long confirmedRequests = requestRepository
                     .countByEventIdAndStatus(event.getId(), RequestStatus.CONFIRMED);
 
-            if (confirmedRequests >= event.getParticipationLimit()) {
+            if (confirmedRequests >= event.getParticipantLimit()) {
                 throw new ConflictException("У события достигнут лимит запросов на участие.");
             }
         }

@@ -51,7 +51,6 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
-    private final RequestMapper requestMapper;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -77,6 +76,11 @@ public class EventServiceImpl implements EventService {
                 event.setViews(0L);
             }
         }
+        Set<Long> eventIds = events
+                .stream()
+                .map(Event::getId)
+                .collect(Collectors.toSet());
+        Map<Long, Long> confirmedRequests = getConfirmedRequestsForEvents(eventIds);
         return eventsShortDto;
     }
 
@@ -363,5 +367,19 @@ public class EventServiceImpl implements EventService {
                         currentViewStatDto -> uris.get(currentViewStatDto.getUri()),
                         ViewStatsDto::getHits)
                 );
+    }
+
+    private Map<Long, Long> getConfirmedRequestsForEvents(Set<Long> eventIds) {
+        if (eventIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        List<Object[]> results = requestRepository.countConfirmedRequestsByEventIds(eventIds);
+
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (Long) result[0],
+                        result -> (Long) result[1]
+                ));
     }
 }
