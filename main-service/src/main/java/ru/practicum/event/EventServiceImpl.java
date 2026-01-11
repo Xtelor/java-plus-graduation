@@ -28,6 +28,8 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ConditionsNotMetException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
+import ru.practicum.request.mapper.RequestMapper;
+import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -35,6 +37,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +50,9 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final RequestRepository requestRepository;
+    private final RequestMapper requestMapper;
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneOffset.UTC);
@@ -112,9 +119,9 @@ public class EventServiceImpl implements EventService {
         if (initiatorId == null || !userRepository.existsById(initiatorId)) {
             throw new NotFoundException("Инициатор события не найден");
         }
-//        if (event.getInitiator().getId() != initiatorId) {
-//            throw new NotFoundException("Текущий пользователь не является инициатором события");
-//        }
+        if (Objects.equals(event.getInitiator().getId(), initiatorId)) {
+            throw new NotFoundException("Текущий пользователь не является инициатором события");
+        }
         EventFullDto eventFullDto = EventMapper.toFullDto(event);
         List<String> uris = new ArrayList<>();
         uris.add("/events/" + eventId);
@@ -146,9 +153,9 @@ public class EventServiceImpl implements EventService {
         if (oldEvent.getState() != State.CANCELED && oldEvent.getState() != State.PENDING) {
             throw new ConditionsNotMetException("Изменять можно только отмененные события или события в состоянии ожидания модерации");
         }
-//        if (oldEvent.getInitiator().getId() != initiatorId) {
-//            throw new ValidationException("Изменить событие может только его инициатор");
-//        }
+        if (Objects.equals(oldEvent.getInitiator().getId(), initiatorId)) {
+            throw new NotFoundException("Изменить событие может только его инициатор");
+        }
         if (updateEventUserRequest.getStateAction() == UserStateAction.SEND_TO_REVIEW) {
             oldEvent.setState(State.PENDING);
         } else if (updateEventUserRequest.getStateAction() == UserStateAction.CANCEL_REVIEW) {
@@ -201,7 +208,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto updateEventAdmin(UpdateEventAdminRequest updateEventAdminRequest, Long eventId) {
+    public EventFullDto updateEventByAdmin(UpdateEventAdminRequest updateEventAdminRequest, Long eventId) {
         log.info("Обновление события администратором");
 
         Event oldEvent = eventRepository.findById(eventId)
@@ -293,10 +300,9 @@ public class EventServiceImpl implements EventService {
             }
         }
         if (publicEventsParam.getSort() == SortEvents.VIEWS) {
-            List<EventShortDto> eventsSortedByViews = eventsShortDto.stream()
+            return eventsShortDto.stream()
                     .sorted(Comparator.comparing(EventShortDto::getViews).reversed())
                     .collect(Collectors.toList());
-            return eventsSortedByViews;
         }
         statsClient.hit("ewm-main-service", uri, ip, LocalDateTime.now());
         return eventsShortDto;
@@ -351,12 +357,11 @@ public class EventServiceImpl implements EventService {
                         currentEvent -> "/events/" + currentEvent.getId(),
                         Event::getId)
                 );
-        Map<Long, Long> views = statsClient.getStats(null, LocalDateTime.now(), uris.keySet().stream().toList(), true)
+        return statsClient.getStats(null, LocalDateTime.now(), uris.keySet().stream().toList(), true)
                 .stream()
                 .collect(Collectors.toMap(
                         currentViewStatDto -> uris.get(currentViewStatDto.getUri()),
                         ViewStatsDto::getHits)
                 );
-        return views;
     }
 }

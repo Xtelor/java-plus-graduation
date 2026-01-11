@@ -24,9 +24,9 @@ public class EventMapper {
                 .description(newEventDto.getDescription())
                 .eventDate(LocalDateTime.from(FORMATTER.parse(newEventDto.getEventDate())))
                 .location(newEventDto.getLocation())
-                .paid(newEventDto.isPaid())
+                .paid(newEventDto.getPaid())
                 .participantLimit(newEventDto.getParticipantLimit())
-                .requestModeration(newEventDto.isRequestModeration())
+                .requestModeration(newEventDto.getRequestModeration())
                 .title(newEventDto.getTitle())
                 .build();
     }
@@ -51,7 +51,7 @@ public class EventMapper {
                 .eventDate(event.getEventDate() != null ? FORMATTER.format(event.getEventDate()) : "")
                 .id(event.getId())
                 .initiator(event.getInitiator() != null ? UserMapper.toShortDto(event.getInitiator()) : null)
-                .paid(event.isPaid())
+                .paid(event.getPaid())
                 .title(event.getTitle())
                 .build();
     }
@@ -66,10 +66,10 @@ public class EventMapper {
                 .id(event.getId())
                 .initiator(event.getInitiator() != null ? UserMapper.toShortDto(event.getInitiator()) : null)
                 .location(event.getLocation())
-                .paid(event.isPaid())
+                .paid(event.getPaid())
                 .participantLimit(event.getParticipantLimit())
                 .publishedOn(event.getPublishedOn() != null ? FORMATTER.format(event.getPublishedOn()) : "")
-                .requestModeration(event.isRequestModeration())
+                .requestModeration(event.getRequestModeration())
                 .state(event.getState().toString())
                 .title(event.getTitle())
                 .build();

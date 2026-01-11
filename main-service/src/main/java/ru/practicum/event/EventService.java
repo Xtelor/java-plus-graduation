@@ -1,6 +1,5 @@
 package ru.practicum.event;
 
-import jakarta.servlet.http.HttpServletRequest;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.params.AdminEventsParam;
 import ru.practicum.event.params.PublicEventsParam;
@@ -9,11 +8,11 @@ import java.util.List;
 
 public interface EventService {
 
-    EventFullDto createEvent(NewEventDto NewEventDto, Long initiatorId);
+    EventFullDto createEvent(NewEventDto newEventDto, Long initiatorId);
 
     EventFullDto updateEventUser(UpdateEventUserRequest updateEventUserRequest, Long initiatorId, Long eventId);
 
-    EventFullDto updateEventAdmin(UpdateEventAdminRequest updateEventAdminRequest, Long eventId);
+    EventFullDto updateEventByAdmin(UpdateEventAdminRequest updateEventAdminRequest, Long eventId);
 
     List<EventShortDto> findByInitiatorId(Long initiatorId, int from, int size);
 
