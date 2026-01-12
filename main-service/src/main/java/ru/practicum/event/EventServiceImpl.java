@@ -20,6 +20,7 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.*;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -120,9 +121,6 @@ public class EventServiceImpl implements EventService {
         if (initiatorId == null || !userRepository.existsById(initiatorId)) {
             throw new NotFoundException("Инициатор события не найден");
         }
-//        if (Objects.equals(event.getInitiator().getId(), initiatorId)) {
-//            throw new NotFoundException("Текущий пользователь не является инициатором события");
-//        }
         EventFullDto eventFullDto = EventMapper.toFullDto(event);
         List<String> uris = new ArrayList<>();
         uris.add("/events/" + eventId);
@@ -132,12 +130,9 @@ public class EventServiceImpl implements EventService {
                 .findFirst()
                 .orElse(0L);
         eventFullDto.setViews(views);
-        Set<Long> eventIds = new HashSet<>();
-        eventIds.add(eventId);
-        Map<Long, Long> confirmedRequests = getConfirmedRequestsForEvents(eventIds);
-        if (confirmedRequests.isEmpty()) {
-            eventFullDto.setConfirmedRequests(0L);
-        }
+
+        eventFullDto.setConfirmedRequests(getConfirmedRequestsCount(eventId));
+
         return eventFullDto;
     }
 
@@ -160,9 +155,6 @@ public class EventServiceImpl implements EventService {
         if (oldEvent.getState() != State.CANCELED && oldEvent.getState() != State.PENDING) {
             throw new ConditionsNotMetException("Изменять можно только отмененные события или события в состоянии ожидания модерации");
         }
-//        if (Objects.equals(oldEvent.getInitiator().getId(), initiatorId)) {
-//            throw new NotFoundException("Изменить событие может только его инициатор");
-//        }
         if (updateEventUserRequest.getStateAction() == UserStateAction.SEND_TO_REVIEW) {
             oldEvent.setState(State.PENDING);
         } else if (updateEventUserRequest.getStateAction() == UserStateAction.CANCEL_REVIEW) {
@@ -208,15 +200,12 @@ public class EventServiceImpl implements EventService {
                 .findFirst()
                 .orElse(0L);
         eventFullDto.setViews(views);
-        Set<Long> eventIds = new HashSet<>();
-        eventIds.add(eventId);
-        Map<Long, Long> confirmedRequests = getConfirmedRequestsForEvents(eventIds);
-        if (confirmedRequests.isEmpty()) {
-            eventFullDto.setConfirmedRequests(0L);
-        }
+
+        eventFullDto.setConfirmedRequests(getConfirmedRequestsCount(eventId));
+
         log.info("Обновление событие с ID: {} пользователем", eventId);
 
-         return eventFullDto;
+        return eventFullDto;
     }
 
     @Override
@@ -287,12 +276,9 @@ public class EventServiceImpl implements EventService {
                 .findFirst()
                 .orElse(0L);
         eventFullDto.setViews(views);
-        Set<Long> eventIds = new HashSet<>();
-        eventIds.add(eventId);
-        Map<Long, Long> confirmedRequests = getConfirmedRequestsForEvents(eventIds);
-        if (confirmedRequests.isEmpty()) {
-            eventFullDto.setConfirmedRequests(0L);
-        }
+
+        eventFullDto.setConfirmedRequests(getConfirmedRequestsCount(eventId));
+
         log.info("Обновление событие с ID: {}  администратором", eventId);
 
         return eventFullDto;
@@ -302,7 +288,7 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getEventsPublic(PublicEventsParam publicEventsParam, String ip, String uri) {
         log.info("Получение опубликованных событий");
         Pageable pageable = PageRequest.of(publicEventsParam.getFrom(), publicEventsParam.getSize(), Sort.by("eventDate"));
-        List<Event> events =  eventRepository.getEventsPublic(publicEventsParam, pageable).getContent();
+        List<Event> events = eventRepository.getEventsPublic(publicEventsParam, pageable).getContent();
         if (events.isEmpty()) {
             throw new ValidationException("Запрос составлен некорректно");
         }
@@ -343,7 +329,7 @@ public class EventServiceImpl implements EventService {
     public List<EventFullDto> searchEventsByAdmin(AdminEventsParam adminEventsParam) {
         log.info("Получение событий администратором");
         Pageable pageable = PageRequest.of(adminEventsParam.getFrom(), adminEventsParam.getSize(), Sort.by("eventDate"));
-        List<Event> events =  eventRepository.searchEventsByAdmin(adminEventsParam, pageable).getContent();
+        List<Event> events = eventRepository.searchEventsByAdmin(adminEventsParam, pageable).getContent();
         Map<Long, Long> views = getViews(events);
         List<EventFullDto> eventsFullDto = events
                 .stream()
@@ -386,12 +372,9 @@ public class EventServiceImpl implements EventService {
                 .findFirst()
                 .orElse(0L);
         eventFullDto.setViews(views);
-        Set<Long> eventIds = new HashSet<>();
-        eventIds.add(eventId);
-        Map<Long, Long> confirmedRequests = getConfirmedRequestsForEvents(eventIds);
-        if (confirmedRequests.isEmpty()) {
-            eventFullDto.setConfirmedRequests(0L);
-        }
+
+        eventFullDto.setConfirmedRequests(getConfirmedRequestsCount(eventId));
+
         statsClient.hit("ewm-main-service", uri, ip, LocalDateTime.now());
         return eventFullDto;
     }
@@ -426,5 +409,12 @@ public class EventServiceImpl implements EventService {
                         result -> (Long) result[0],
                         result -> (Long) result[1]
                 ));
+    }
+
+    private Long getConfirmedRequestsCount(Long eventId) {
+        Set<Long> eventIds = new HashSet<>();
+        eventIds.add(eventId);
+        Map<Long, Long> confirmedRequests = getConfirmedRequestsForEvents(eventIds);
+        return confirmedRequests.getOrDefault(eventId, 0L);
     }
 }
