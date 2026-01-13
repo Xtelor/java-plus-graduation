@@ -1,7 +1,9 @@
 package ru.practicum;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -22,6 +24,7 @@ public class EndpointHitController {
     }
 
     @PostMapping("/hit")
+    @ResponseStatus(HttpStatus.CREATED)
     public void create(@Valid @RequestBody EndpointHitDto endpointHitDto) {
         endpointHitService.create(endpointHitDto);
     }
