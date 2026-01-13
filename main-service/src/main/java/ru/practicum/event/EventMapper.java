@@ -70,6 +70,7 @@ public class EventMapper {
                 .requestModeration(event.getRequestModeration())
                 .state(event.getState().toString())
                 .title(event.getTitle())
+                .commentCount(0L)
                 .build();
     }
 }

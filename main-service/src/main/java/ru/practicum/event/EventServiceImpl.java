@@ -11,6 +11,8 @@ import ru.practicum.StatsClient;
 import ru.practicum.ViewStatsDto;
 import ru.practicum.category.Category;
 import ru.practicum.category.CategoryRepository;
+import ru.practicum.comment.CommentRepository;
+import ru.practicum.comment.CommentStatus;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.params.AdminEventsParam;
 import ru.practicum.event.params.PublicEventsParam;
@@ -41,10 +43,16 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
+    private final CommentRepository commentRepository;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneOffset.UTC);
+
+    // Получения количества комментариев
+    private Long getCommentCount(Long eventId) {
+        return commentRepository.countByEventIdAndStatus(eventId, CommentStatus.PUBLISHED);
+    }
 
     @Override
     public List<EventShortDto> findByInitiatorId(Long initiatorId, int from, int size) {
@@ -132,6 +140,9 @@ public class EventServiceImpl implements EventService {
         eventFullDto.setViews(views);
 
         eventFullDto.setConfirmedRequests(getConfirmedRequestsCount(eventId));
+
+        // Добавляем количество комментариев
+        eventFullDto.setCommentCount(getCommentCount(eventId));
 
         return eventFullDto;
     }
@@ -353,6 +364,8 @@ public class EventServiceImpl implements EventService {
             } else {
                 event.setConfirmedRequests(0L);
             }
+            // Добавляем количество комментариев
+            event.setCommentCount(getCommentCount(event.getId()));
         }
         return eventsFullDto;
     }
@@ -374,6 +387,9 @@ public class EventServiceImpl implements EventService {
         eventFullDto.setViews(views);
 
         eventFullDto.setConfirmedRequests(getConfirmedRequestsCount(eventId));
+
+        // Добавляем количество комментариев
+        eventFullDto.setCommentCount(getCommentCount(eventId));
 
         statsClient.hit("ewm-main-service", uri, ip, LocalDateTime.now());
         return eventFullDto;
