@@ -1333,7 +1333,7 @@
 									"        pm.request.url = url;\r",
 									"\r",
 									"    } catch(err) {\r",
-									"        console.error(\"❌ Ошибка:\", err);\r",
+									"        console.error(\"Ошибка:\", err);\r",
 									"    }\r",
 									"};\r",
 									"\r",
@@ -2056,15 +2056,15 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": ""
+			"value": "http://localhost:8080"
 		},
 		{
 			"key": "from",
-			"value": ""
+			"value": "0"
 		},
 		{
 			"key": "size",
-			"value": ""
+			"value": "10"
 		},
 		{
 			"key": "commentatorId",
