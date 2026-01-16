@@ -28,7 +28,7 @@ services:
       - POSTGRES_USER=stat
       - POSTGRES_PASSWORD=stat
     volumes:
-      - ./volumes/stats-postgres:/var/lib/postgresql/data/
+      - stats-postgres:/var/lib/postgresql/data/
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U stat -d ewm-stats" ]
       interval: 5s
@@ -65,7 +65,7 @@ services:
       - POSTGRES_USER=main
       - POSTGRES_PASSWORD=main
     volumes:
-      - ./volumes/main-postgres:/var/lib/postgresql/data/
+      - main-postgres:/var/lib/postgresql/data/
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U main -d ewm-main" ]
       interval: 5s
