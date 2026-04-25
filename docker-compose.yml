@@ -1,57 +1,4 @@
 services:
-
-  discovery-server:
-    build: infra/discovery-server
-    container_name: discovery-server
-    ports:
-      - "8761:8761"
-
-  config-server:
-    build: infra/config-server
-    container_name: config-server
-    restart: on-failure
-    environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
-    depends_on:
-      - discovery-server
-
-  gateway-server:
-    build: infra/gateway-server
-    container_name: gateway-server
-    restart: on-failure
-    ports:
-      - "8080:8080"
-    environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
-    depends_on:
-      - discovery-server
-      - config-server
-
-  stats-server:
-    build: stats/stats-server
-    container_name: stats-server
-    restart: on-failure
-    ports:
-      - "9090:9090"
-    environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm-stats
-      - SPRING_DATASOURCE_USERNAME=stat
-      - SPRING_DATASOURCE_PASSWORD=stat
-    depends_on:
-      stats-db:
-        condition: service_healthy
-      discovery-server:
-        condition: service_started
-      config-server:
-        condition: service_started
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9090/actuator/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
   stats-db:
     image: postgres:16.1
     container_name: postgres-ewm-stats-db
@@ -69,26 +16,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 30s
-
-  ewm-service:
-    build: core/main-service
-    container_name: ewm-service
-    restart: on-failure
-    environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-main
-      - SPRING_DATASOURCE_USERNAME=main
-      - SPRING_DATASOURCE_PASSWORD=main
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT=30000
-      - SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE=5
-    depends_on:
-      ewm-db:
-        condition: service_healthy
-      discovery-server:
-        condition: service_started
-      config-server:
-        condition: service_started
 
   ewm-db:
     image: postgres:16.1

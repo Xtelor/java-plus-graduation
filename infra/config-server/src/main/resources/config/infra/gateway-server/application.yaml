@@ -16,4 +16,14 @@ spring:
 eureka:
   instance:
     prefer-ip-address: true
+  client:
     registry-fetch-interval-seconds: 2
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: gateway
+  endpoint:
+    gateway:
+      enabled: true
