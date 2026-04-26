@@ -24,4 +24,4 @@ logging:
 eureka:
   instance:
     prefer-ip-address: true
-    lease-renewal-interval-in-seconds: 2gi
+    lease-renewal-interval-in-seconds: 2
