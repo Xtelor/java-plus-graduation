@@ -22,6 +22,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Клиент сервиса статистики
+ */
 @Slf4j
 @Component
 public class StatsClient {
@@ -55,7 +58,13 @@ public class StatsClient {
         log.info("StatsClient инициализирован с DiscoveryClient");
     }
 
-    // Сохранение информации о том, что к эндпоинту был запрос
+    /**
+     * Сохранение информации о том, что к эндпоинту был запрос
+     * @param app - название приложения
+     * @param uri - URI-адрес запроса
+     * @param ip - IP-адрес пользователя
+     * @param timestamp - время запроса
+     */
     public void hit(String app, String uri, String ip, LocalDateTime timestamp) {
         EndpointHitDto hitDto = EndpointHitDto.builder()
                 .app(app)
@@ -71,7 +80,14 @@ public class StatsClient {
         }
     }
 
-    // Получение статистики по посещениям
+    /**
+     * Получение статистики по посещениям
+     * @param start - время начала
+     * @param end - время конца
+     * @param uris - список URI
+     * @param unique - учитывание уникальных IP-адресов
+     * @return список объектов {@link ViewStatsDto} со статистикой посещений
+     */
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end,
                                        List<String> uris, Boolean unique) {
         try {
@@ -94,7 +110,10 @@ public class StatsClient {
         }
     }
 
-    // Получение экземпляра сервиса статистики из Eureka
+    /**
+     * Получение экземпляра сервиса статистики из Eureka
+     * @return экземпляр {@link ServiceInstance} сервиса статистики
+     */
     private ServiceInstance getInstance() {
         try {
             return discoveryClient.getInstances(statsServiceId).getFirst();
@@ -105,13 +124,21 @@ public class StatsClient {
         }
     }
 
-    // Получение URL сервера с учётом повторных попыток
+    /**
+     * Получение URL сервера с учётом повторных попыток
+     * @param path - путь к эндпоинту
+     * @return готовый {@link URI} для запроса
+     */
     private URI makeUri(String path) {
         ServiceInstance instance = retryTemplate.execute(cxt -> getInstance());
         return URI.create("http://" + instance.getHost() + ":" + instance.getPort() + path);
     }
 
-    // Кодировка даты и времени
+    /**
+     * Кодировка даты и времени
+     * @param dateTime - дата и время
+     * @return закодированная в формате UTF-8 строка с датой и временем
+     */
     private String encode(LocalDateTime dateTime) {
         return URLEncoder.encode(FORMATTER.format(dateTime), StandardCharsets.UTF_8);
     }
