@@ -1,0 +1,27 @@
+server:
+  port: 0
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5434/ewm-main}
+    username: ${SPRING_DATASOURCE_USERNAME:main}
+    password: ${SPRING_DATASOURCE_PASSWORD:main}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+logging:
+  level:
+    ru.practicum: DEBUG
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 2

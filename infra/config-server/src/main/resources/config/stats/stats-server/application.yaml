@@ -1,0 +1,26 @@
+server:
+  port: 9090
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/ewm-stats}
+    username: ${SPRING_DATASOURCE_USERNAME:stat}
+    password: ${SPRING_DATASOURCE_PASSWORD:stat}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+logging:
+  level:
+    ru.practicum: DEBUG
+
+eureka:
+  instance:
+    prefer-ip-address: true

@@ -12,8 +12,9 @@
 
 	<name>Explore With Me</name>
 	<modules>
-		<module>stats-service</module>
-		<module>main-service</module>
+		<module>stats</module>
+        <module>infra</module>
+		<module>core</module>
 	</modules>
 
 	<groupId>ru.practicum</groupId>
@@ -25,6 +26,18 @@
 		<java.version>21</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>2023.0.1</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<pluginManagement>
@@ -38,6 +51,7 @@
 						</systemPropertyVariables>
 					</configuration>
 				</plugin>
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
