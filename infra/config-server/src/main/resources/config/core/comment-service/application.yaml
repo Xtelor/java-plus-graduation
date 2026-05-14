@@ -1,11 +1,11 @@
 server:
-  port: 9090
+  port: 0
 
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/ewm-stats}
-    username: ${SPRING_DATASOURCE_USERNAME:stat}
-    password: ${SPRING_DATASOURCE_PASSWORD:stat}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5436/ewm-comment-service}
+    username: ${SPRING_DATASOURCE_USERNAME:comment}
+    password: ${SPRING_DATASOURCE_PASSWORD:comment}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 40
@@ -28,3 +28,4 @@ logging:
 eureka:
   instance:
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 2

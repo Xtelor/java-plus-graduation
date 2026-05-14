@@ -8,10 +8,65 @@ spring:
         locator:
           enabled: true
       routes:
-        - id: main-service-route
-          uri: lb://main-service
+        - id: admin
+          uri: lb://user-service
           predicates:
-            - Path=/**
+            - Path=/admin/users/**
+
+        - id: categories-admin
+          uri: lb://category-service
+          predicates:
+            - Path=/admin/categories/**
+
+        - id: categories-public
+          uri: lb://category-service
+          predicates:
+            - Path=/categories/**
+
+        - id: events-admin
+          uri: lb://event-service
+          predicates:
+            - Path=/admin/events/**
+
+        - id: requests-private
+          uri: lb://request-service
+          predicates:
+            - Path=/users/*/requests/**,/users/*/events/*/requests/**
+
+        - id: events-private
+          uri: lb://event-service
+          predicates:
+            - Path=/users/*/events/**
+
+        - id: events-public
+          uri: lb://event-service
+          predicates:
+            - Path=/events/**
+
+        - id: comments-admin
+          uri: lb://comment-service
+          predicates:
+            - Path=/admin/comments/**
+
+        - id: comments-private
+          uri: lb://comment-service
+          predicates:
+            - Path=/users/*/comments/**
+
+        - id: comments-public
+          uri: lb://comment-service
+          predicates:
+            - Path=/comments/**
+
+        - id: compilations-admin
+          uri: lb://compilation-service
+          predicates:
+            - Path=/admin/compilations/**
+
+        - id: compilations-public
+          uri: lb://compilation-service
+          predicates:
+            - Path=/compilations/**
 
 eureka:
   instance:

@@ -5,22 +5,13 @@
         <groupId>ru.practicum</groupId>
         <artifactId>explore-with-me</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>core</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>category-service</artifactId>
+    <packaging>jar</packaging>
 
-    <name>core</name>
-
-    <modules>
-        <module>user-service</module>
-        <module>category-service</module>
-        <module>comment-service</module>
-        <module>compilation-service</module>
-        <module>event-service</module>
-        <module>request-service</module>
-        <module>interaction-api</module>
-    </modules>
+    <name>category-service</name>
 
     <dependencies>
         <dependency>
@@ -28,6 +19,18 @@
             <artifactId>junit</artifactId>
             <version>3.8.1</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.practicum</groupId>
+            <artifactId>interaction-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
