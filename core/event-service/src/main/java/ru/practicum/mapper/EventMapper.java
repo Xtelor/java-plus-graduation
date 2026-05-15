@@ -5,7 +5,6 @@ import ru.practicum.dto.categories.CategoryDto;
 import ru.practicum.dto.events.EventFullDto;
 import ru.practicum.dto.events.EventShortDto;
 import ru.practicum.dto.events.NewEventDto;
-import ru.practicum.dto.events.UpdateEventUserRequest;
 import ru.practicum.entity.Event;
 import ru.practicum.mappers.LocationMapper;
 
@@ -28,19 +27,6 @@ public class EventMapper {
                 .participantLimit(newEventDto.getParticipantLimit())
                 .requestModeration(newEventDto.getRequestModeration())
                 .title(newEventDto.getTitle())
-                .build();
-    }
-
-    public static Event toEntity(UpdateEventUserRequest updateEventUserRequest) {
-        return Event.builder()
-                .annotation(updateEventUserRequest.getAnnotation())
-                .description(updateEventUserRequest.getDescription())
-                .eventDate(LocalDateTime.from(FORMATTER.parse(updateEventUserRequest.getEventDate())))
-                .location(LocationMapper.toEntity(updateEventUserRequest.getLocation()))
-                .paid(updateEventUserRequest.getPaid())
-                .participantLimit(updateEventUserRequest.getParticipantLimit())
-                .requestModeration(updateEventUserRequest.getRequestModeration())
-                .title(updateEventUserRequest.getTitle())
                 .build();
     }
 
@@ -73,21 +59,6 @@ public class EventMapper {
                 .state(event.getState() != null ? event.getState().toString() : null)
                 .title(event.getTitle())
                 .commentCount(0L)
-                .build();
-    }
-
-    public static EventShortDto toShortDtoFromFull(EventFullDto fullDto) {
-        if (fullDto == null) {
-            return null;
-        }
-        return EventShortDto.builder()
-                .id(fullDto.getId())
-                .title(fullDto.getTitle())
-                .annotation(fullDto.getAnnotation())
-                .category(fullDto.getCategory())
-                .eventDate(fullDto.getEventDate())
-                .initiator(fullDto.getInitiator())
-                .paid(fullDto.getPaid())
                 .build();
     }
 }

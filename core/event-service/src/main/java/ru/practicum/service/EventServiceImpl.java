@@ -204,12 +204,6 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException("Инициатор события не найден");
         }
 
-        //getUserOrThrow(initiatorId);
-
-//        if (updateEventUserRequest.getCategory() != null) {
-//            getCategoryOrThrow(updateEventUserRequest.getCategory());
-//        }
-
         if (updateEventUserRequest.getCategory() != null
                 && !Objects.equals(updateEventUserRequest.getCategory(), oldEvent.getCategoryId())) {
             getCategoryOrThrow(updateEventUserRequest.getCategory());
@@ -271,12 +265,6 @@ public class EventServiceImpl implements EventService {
         }
 
         Event updatedEvent = eventRepository.save(oldEvent);
-
-//        EventFullDto eventFullDto = EventMapper.toFullDto(
-//                updatedEvent,
-//                getCategoryOrNull(updatedEvent.getCategoryId()),
-//                toUserShortDto(getUserOrThrow(updatedEvent.getInitiatorId()))
-//        );
 
         EventFullDto eventFullDto = EventMapper.toFullDto(
                 updatedEvent,
@@ -428,7 +416,7 @@ public class EventServiceImpl implements EventService {
                 .map(event -> EventMapper.toShortDto(
                         event,
                         getCategoryOrNull(event.getCategoryId()),
-                        toUserShortDto(getUserOrThrow(event.getInitiatorId()))
+                        getUserShortOrUnknown(event.getInitiatorId())
                 ))
                 .collect(Collectors.toList());
 
@@ -491,7 +479,7 @@ public class EventServiceImpl implements EventService {
         EventFullDto eventFullDto = EventMapper.toFullDto(
                 event,
                 getCategoryOrNull(event.getCategoryId()),
-                toUserShortDto(getUserOrThrow(event.getInitiatorId()))
+                getUserShortOrUnknown(event.getInitiatorId())
         );
 
         List<String> uris = new ArrayList<>();
@@ -648,6 +636,12 @@ public class EventServiceImpl implements EventService {
             return publicCategoryClient.getCategoryById(categoryId);
         } catch (FeignException.NotFound e) {
             return null;
+        } catch (Exception e) {
+            log.warn("Не удалось получить категорию {}: {}", categoryId, e.getMessage());
+            return CategoryDto.builder()
+                    .id(categoryId)
+                    .name("unknown")
+                    .build();
         }
     }
 
@@ -690,6 +684,18 @@ public class EventServiceImpl implements EventService {
             log.warn("Не удалось получить категорию {} для ответа: {}", categoryId, e.getMessage());
             return CategoryDto.builder()
                     .id(categoryId)
+                    .name("unknown")
+                    .build();
+        }
+    }
+
+    private UserShortDto getUserShortOrUnknown(Long userId) {
+        try {
+            return toUserShortDto(getUserOrThrow(userId));
+        } catch (Exception e) {
+            log.warn("Не удалось получить пользователя {}: {}", userId, e.getMessage());
+            return UserShortDto.builder()
+                    .id(userId)
                     .name("unknown")
                     .build();
         }

@@ -25,7 +25,6 @@ import ru.practicum.feign.requests.PrivateRequestClient;
 import ru.practicum.mapper.CommentMapper;
 import ru.practicum.repository.CommentRepository;
 
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -111,8 +110,6 @@ public class CommentServiceImpl implements CommentService {
 
         log.info("Получение комментариев события {}", eventId);
 
-        //getEventOrThrow(eventId);
-
         Pageable pageable = PageRequest.of(from / size, size);
         List<Comment> comments = commentRepository.findByEventIdAndStatus(eventId, CommentStatus.PUBLISHED, pageable);
 
@@ -174,6 +171,7 @@ public class CommentServiceImpl implements CommentService {
 
     // Получение DTO события
     private EventFullDto getEventOrThrow(Long eventId) {
+
         try {
             return eventClient.findById(eventId);
         } catch (FeignException.NotFound e) {
@@ -182,6 +180,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private UserShortDto toShortDto(UserDto userDto) {
+
         return UserShortDto.builder()
                 .id(userDto.getId())
                 .name(userDto.getName())

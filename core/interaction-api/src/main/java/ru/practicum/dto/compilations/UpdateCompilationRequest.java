@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateCompilationRequest {
+
     // Список ID событий
     private Set<Long> events;
 

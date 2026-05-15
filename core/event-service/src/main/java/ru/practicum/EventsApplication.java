@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 public class EventsApplication {
     public static void main( String[] args ) {
+
         SpringApplication.run(EventsApplication.class, args);
     }
 }

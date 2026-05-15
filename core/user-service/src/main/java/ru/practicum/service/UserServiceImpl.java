@@ -25,6 +25,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto createUser(NewUserRequest newUserRequest) {
+
         log.info("Создание пользователя с email: {}", newUserRequest.getEmail());
 
         User user = UserMapper.toEntity(newUserRequest);
@@ -36,6 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getUsers(List<Long> ids, Pageable pageable) {
+
         log.info("Получение пользователей по IDs: {}, пагинация: {}", ids, pageable);
 
         List<User> users;
@@ -54,6 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUser(Long userId) {
+
         log.info("Удаление пользователя с ID: {}", userId);
 
         if (!userRepository.existsById(userId)) {

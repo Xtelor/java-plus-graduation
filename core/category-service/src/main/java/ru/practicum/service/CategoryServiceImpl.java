@@ -31,6 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
+
         log.info("Создание новой категории с именем: {}", newCategoryDto.getName());
 
         // Проверка уникальности имени
@@ -46,6 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto updateCategory(Long categoryId, CategoryDto categoryDto) {
+
         log.info("Обновление категории с ID: {}, новые данные: {}", categoryId, categoryDto);
 
         // Получение категории с проверкой существования
@@ -66,6 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void deleteCategory(Long categoryId) {
+
         log.info("Удаление категории с ID: {}", categoryId);
 
         // Проверка существования категории
@@ -80,6 +83,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getAllCategories(Pageable pageable) {
+
         log.info("Получение всех категорий с пагинацией: {}", pageable);
 
         List<Category> categories = categoryRepository.findAllBy(pageable);
@@ -92,6 +96,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto getCategoryById(Long categoryId) {
+
         log.info("Получение категории по ID: {}", categoryId);
 
         Category category = getCategoryOrThrow(categoryId);
@@ -99,6 +104,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private Category getCategoryOrThrow(Long categoryId) {
+
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> {
                     log.warn("Категория с ID {} не найдена", categoryId);
@@ -107,6 +113,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private void checkNameUniqueness(String name) {
+
         if (categoryRepository.existsByName(name)) {
             log.warn("Категория с именем '{}' уже существует", name);
             throw new DataIntegrityViolationException(
@@ -116,6 +123,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private void checkCategoryNotUsedInEvents(Long categoryId) {
+
         if (Objects.equals(internalEventClient.existsByCategoryId(categoryId), Boolean.TRUE)) {
             log.warn("Категория с ID {} используется в событиях", categoryId);
             throw new ConflictException(

@@ -21,7 +21,4 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // Получить комментарий по ID и автору
     Optional<Comment> findByIdAndAuthorId(Long id, Long authorId);
-
-    // Подсчет опубликованных комментариев
-    Long countByEventIdAndStatus(Long eventId, CommentStatus status);
 }

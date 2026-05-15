@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 public class RequestApplication {
     public static void main( String[] args ) {
+
         SpringApplication.run(RequestApplication.class, args);
     }
 }

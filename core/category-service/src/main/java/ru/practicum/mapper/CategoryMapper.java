@@ -18,11 +18,4 @@ public class CategoryMapper {
                 .name(newCategoryDto.getName())
                 .build();
     }
-
-    public Category toEntity(CategoryDto categoryDto) {
-        return Category.builder()
-                .id(categoryDto.getId())
-                .name(categoryDto.getName())
-                .build();
-    }
 }

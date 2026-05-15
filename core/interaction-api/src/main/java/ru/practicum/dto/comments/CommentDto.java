@@ -8,6 +8,7 @@ import ru.practicum.dto.admin.UserShortDto;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentDto {
+
     private Long id;
     private String text;
     private UserShortDto author;

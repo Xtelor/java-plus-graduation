@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 public class CommentsApplication {
     public static void main( String[] args ) {
+
         SpringApplication.run(CommentsApplication.class, args);
     }
 }
