@@ -19,9 +19,7 @@ import ru.practicum.feign.events.PrivateEventClient;
 import ru.practicum.mapper.RequestMapper;
 import ru.practicum.repository.RequestRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -137,6 +135,31 @@ public class RequestEventServiceImpl implements RequestEventService {
         result.setRejectedRequests(rejected);
 
         return result;
+    }
+
+    @Override
+    public Map<Long, Long> getConfirmedRequestsCountByEvents(List<Long> eventIds) {
+
+        if (eventIds == null || eventIds.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        List<Object[]> results = requestRepository.countByEventIdsAndStatus(
+                eventIds, RequestStatus.CONFIRMED);
+
+        Map<Long, Long> confirmedCounts = new HashMap<>();
+
+        for (Object[] row : results) {
+            Long eventId = (Long) row[0];
+            Long count = (Long) row[1];
+            confirmedCounts.put(eventId, count);
+        }
+
+        for (Long eventId : eventIds) {
+            confirmedCounts.putIfAbsent(eventId, 0L);
+        }
+
+        return confirmedCounts;
     }
 
     private void findUserById(Long userId) {

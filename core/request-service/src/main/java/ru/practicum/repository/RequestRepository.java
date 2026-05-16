@@ -7,7 +7,6 @@ import ru.practicum.entity.Request;
 import ru.practicum.enums.RequestStatus;
 
 import java.util.List;
-import java.util.Set;
 
 public interface RequestRepository extends JpaRepository<Request, Long> {
 
@@ -25,4 +24,11 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
 
     // Получение списка заявок по списку их ID
     List<Request> findAllByIdIn(List<Long> ids);
+
+    @Query("SELECT r.eventId, COUNT(r) FROM Request r " +
+            "WHERE r.eventId IN :eventIds AND r.status = :status " +
+            "GROUP BY r.eventId")
+    List<Object[]> countByEventIdsAndStatus(
+            @Param("eventIds") List<Long> eventIds,
+            @Param("status") RequestStatus status);
 }

@@ -24,6 +24,7 @@ import ru.practicum.exceptions.ValidationException;
 import ru.practicum.feign.admin.UserClient;
 import ru.practicum.feign.categories.PublicCategoryClient;
 import ru.practicum.feign.comments.PublicCommentClient;
+import ru.practicum.feign.requests.InternalRequestClient;
 import ru.practicum.feign.requests.PrivateEventRequestClient;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.mappers.LocationMapper;
@@ -50,6 +51,7 @@ public class EventServiceImpl implements EventService {
     private final UserClient userClient;
     private final PublicCategoryClient publicCategoryClient;
     private final PrivateEventRequestClient privateEventRequestClient;
+    private final InternalRequestClient internalRequestClient;
     private final PublicCommentClient publicCommentClient;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter
@@ -485,7 +487,6 @@ public class EventServiceImpl implements EventService {
         List<String> uris = new ArrayList<>();
         uris.add("/events/" + eventId);
 
-        //statsClient.hit("ewm-event-service", uri, ip, LocalDateTime.now());
         statsClient.hit("events", uri, ip, LocalDateTime.now());
 
         Long views = statsClient.getStats(LocalDateTime.now().minusYears(1),
@@ -563,27 +564,24 @@ public class EventServiceImpl implements EventService {
             return Collections.emptyMap();
         }
 
-        Map<Long, Long> confirmedRequests = new HashMap<>();
+        List<Long> eventIds = events.stream()
+                .map(Event::getId)
+                .collect(Collectors.toList());
 
-        for (Event event : events) {
-            try {
-                List<ParticipationRequestDto> results = privateEventRequestClient
-                        .getEventParticipants(event.getInitiatorId(), event.getId());
+        try {
+            return internalRequestClient.getConfirmedRequestsCount(eventIds);
+        } catch (Exception e) {
 
-                long confirmedCount = results == null ? 0L : results.stream()
-                        .filter(result ->
-                                Objects.equals(String.valueOf(result.getStatus()), RequestStatus.CONFIRMED.name()))
-                        .count();
+            log.warn("Не удалось получить подтверждённые заявки для событий: {}", e.getMessage());
 
-                confirmedRequests.put(event.getId(), confirmedCount);
+            Map<Long, Long> confirmedRequests = new HashMap<>();
 
-            } catch (Exception e) {
-                log.warn("Не удалось получить заявки для события {}: {}", event.getId(), e.getMessage());
+            for (Event event : events) {
                 confirmedRequests.put(event.getId(), 0L);
             }
-        }
 
-        return confirmedRequests;
+            return confirmedRequests;
+        }
     }
 
     private Long getConfirmedRequestsCount(Event event) {
