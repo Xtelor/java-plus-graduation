@@ -13,7 +13,13 @@
     <name>core</name>
 
     <modules>
-        <module>main-service</module>
+        <module>user-service</module>
+        <module>category-service</module>
+        <module>comment-service</module>
+        <module>compilation-service</module>
+        <module>event-service</module>
+        <module>request-service</module>
+        <module>interaction-api</module>
     </modules>
 
     <dependencies>

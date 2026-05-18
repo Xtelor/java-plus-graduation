@@ -17,7 +17,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class EndpointHitService {
+
     private final EndpointHitRepository endpointHitRepository;
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter
             .ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneOffset.UTC);

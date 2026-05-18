@@ -17,24 +17,119 @@ services:
       retries: 10
       start_period: 30s
 
-  ewm-db:
+  user-service-db:
     image: postgres:16.1
-    container_name: postgres-ewm-main-db
+    container_name: postgres-ewm-user-service-db
     ports:
       - "5434:5432"
     environment:
-      - POSTGRES_DB=ewm-main
-      - POSTGRES_USER=main
-      - POSTGRES_PASSWORD=main
+      - POSTGRES_DB=ewm-user-service
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=user
     volumes:
-      - main-postgres:/var/lib/postgresql/data/
+      - user-service-postgres:/var/lib/postgresql/data/
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U main -d ewm-main" ]
+      test: [ "CMD-SHELL", "pg_isready -U user -d ewm-user-service" ]
       interval: 5s
       timeout: 5s
       retries: 10
-      start_period: 30s
+      start_period: 10s
+
+  category-service-db:
+      image: postgres:16.1
+      container_name: postgres-ewm-category-service-db
+      ports:
+        - "5435:5432"
+      environment:
+        - POSTGRES_DB=ewm-category-service
+        - POSTGRES_USER=category
+        - POSTGRES_PASSWORD=category
+      volumes:
+        - category-service-postgres:/var/lib/postgresql/data/
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U category -d ewm-category-service" ]
+        interval: 5s
+        timeout: 5s
+        retries: 10
+        start_period: 10s
+
+  comment-service-db:
+      image: postgres:16.1
+      container_name: postgres-ewm-comment-service-db
+      ports:
+        - "5436:5432"
+      environment:
+        - POSTGRES_DB=ewm-comment-service
+        - POSTGRES_USER=comment
+        - POSTGRES_PASSWORD=comment
+      volumes:
+        - comment-service-postgres:/var/lib/postgresql/data/
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U comment -d ewm-comment-service" ]
+        interval: 5s
+        timeout: 5s
+        retries: 10
+        start_period: 10s
+
+  compilation-service-db:
+      image: postgres:16.1
+      container_name: postgres-ewm-compilation-service-db
+      ports:
+        - "5437:5432"
+      environment:
+        - POSTGRES_DB=ewm-compilation-service
+        - POSTGRES_USER=compilation
+        - POSTGRES_PASSWORD=compilation
+      volumes:
+        - compilation-service-postgres:/var/lib/postgresql/data/
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U compilation -d ewm-compilation-service" ]
+        interval: 5s
+        timeout: 5s
+        retries: 10
+        start_period: 10s
+
+  event-service-db:
+      image: postgres:16.1
+      container_name: postgres-ewm-event-service-db
+      ports:
+        - "5438:5432"
+      environment:
+        - POSTGRES_DB=ewm-event-service
+        - POSTGRES_USER=event
+        - POSTGRES_PASSWORD=event
+      volumes:
+        - event-service-postgres:/var/lib/postgresql/data/
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U event -d ewm-event-service" ]
+        interval: 5s
+        timeout: 5s
+        retries: 10
+        start_period: 10s
+
+  request-service-db:
+      image: postgres:16.1
+      container_name: postgres-ewm-request-service-db
+      ports:
+        - "5439:5432"
+      environment:
+        - POSTGRES_DB=ewm-request-service
+        - POSTGRES_USER=request
+        - POSTGRES_PASSWORD=request
+      volumes:
+        - request-service-postgres:/var/lib/postgresql/data/
+      healthcheck:
+        test: [ "CMD-SHELL", "pg_isready -U request -d ewm-request-service" ]
+        interval: 5s
+        timeout: 5s
+        retries: 10
+        start_period: 10s
 
 volumes:
-  stats-postgres:
-  main-postgres:
+    stats-postgres:
+    user-service-postgres:
+    category-service-postgres:
+    comment-service-postgres:
+    compilation-service-postgres:
+    event-service-postgres:
+    request-service-postgres:

@@ -1,0 +1,5 @@
+feign:
+  retry:
+    period: 200
+    maxPeriod: 1000
+    maxAttempts: 3
