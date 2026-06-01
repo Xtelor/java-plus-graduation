@@ -82,15 +82,24 @@ public class AnalyzerService {
             }
         }
 
+        List<Similarity> allCandidateSimilarities =
+                similarityRepository.findAllForEvents(candidates);
+
         List<Result> results = new ArrayList<>();
 
+
         for (Long candidateId : candidates) {
-            List<Similarity> neighbors = similarityRepository.findAllForEvent(candidateId).stream()
-                    .filter(s -> {
-                        long other = s.getEvent1().equals(candidateId) ? s.getEvent2() : s.getEvent1();
+
+            List<Similarity> neighbors = allCandidateSimilarities.stream()
+                    .filter(s -> s.getEvent1().equals(candidateId) ||
+                                    s.getEvent2().equals(candidateId)
+                    )
+                    .filter(s -> {long other = s.getEvent1().equals(candidateId) ?
+                            s.getEvent2() : s.getEvent1();
                         return userEventIds.contains(other);
                     })
-                    .sorted((a, b) -> Double.compare(b.getSimilarity(), a.getSimilarity()))
+                    .sorted((a, b) ->
+                            Double.compare(b.getSimilarity(), a.getSimilarity()))
                     .limit(NEIGHBORS_LIMIT)
                     .toList();
 
@@ -98,8 +107,12 @@ public class AnalyzerService {
             double simSum = 0.0;
 
             for (Similarity n : neighbors) {
-                long otherId = n.getEvent1().equals(candidateId) ? n.getEvent2() : n.getEvent1();
-                double rating = interactionRepository.findByUserIdAndEventId(userId, otherId)
+                long otherId = n.getEvent1().equals(candidateId)
+                        ? n.getEvent2()
+                        : n.getEvent1();
+
+                double rating = interactionRepository
+                        .findByUserIdAndEventId(userId, otherId)
                         .map(Interaction::getRating)
                         .orElse(0.0);
 

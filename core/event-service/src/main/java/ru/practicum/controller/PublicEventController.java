@@ -25,7 +25,9 @@ import java.util.List;
 @Slf4j
 @Validated
 public class PublicEventController implements PublicEventClient {
+
     private final EventService eventService;
+    private static final String USER_ID_HEADER = "X-EWM-USER-ID";
 
     @Override
     @GetMapping
@@ -58,7 +60,7 @@ public class PublicEventController implements PublicEventClient {
     @ResponseStatus(HttpStatus.OK)
     public EventFullDto findById(
             @PathVariable Long eventId,
-            @RequestHeader(value = "X-EWM-USER-ID") long userId) {
+            @RequestHeader(USER_ID_HEADER) long userId) {
 
         log.info("Получение полной информации о событии");
 
@@ -69,7 +71,7 @@ public class PublicEventController implements PublicEventClient {
     @GetMapping("/recommendations")
     @ResponseStatus(HttpStatus.OK)
     public List<EventShortDto> getRecommendations(
-            @RequestHeader("X-EWM-USER-ID") long userId,
+            @RequestHeader(USER_ID_HEADER) long userId,
             @RequestParam(defaultValue = "10") @Positive int size) {
 
         log.info("GET /events/recommendations userId={}", userId);
@@ -82,7 +84,7 @@ public class PublicEventController implements PublicEventClient {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void likeEvent(
             @PathVariable Long eventId,
-            @RequestHeader("X-EWM-USER-ID") long userId) {
+            @RequestHeader(USER_ID_HEADER) long userId) {
 
         log.info("PUT /events/{}/like userId={}", eventId, userId);
 

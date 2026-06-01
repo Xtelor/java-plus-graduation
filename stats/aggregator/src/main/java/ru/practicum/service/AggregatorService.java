@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
@@ -71,33 +73,40 @@ public class AggregatorService {
     }
 
     private void process(UserActionAvro action) {
+
         long userId = action.getUserId();
         long eventId = action.getEventId();
         Instant timestamp = action.getTimestamp();
 
-        double newWeight = weightResolver.resolve(action.getActionType());
-        double oldWeight = state.getCurrentWeight(eventId, userId);
+        BigDecimal newWeight = BigDecimal.valueOf(weightResolver.resolve(action.getActionType()));
+        BigDecimal oldWeight = BigDecimal.valueOf(state.getCurrentWeight(eventId, userId));
 
-        if (newWeight <= oldWeight) {
+        if (newWeight.compareTo(oldWeight) <= 0) {
             return;
         }
 
-        state.putUserWeight(eventId, userId, newWeight);
-        state.updateWeightSum(eventId, oldWeight, newWeight);
+
+        state.putUserWeight(eventId, userId, newWeight.doubleValue());
+        state.updateWeightSum(eventId, oldWeight.doubleValue(), newWeight.doubleValue());
 
         for (Long otherEventId : state.getAllEventIds()) {
             if (otherEventId.equals(eventId)) {
                 continue;
             }
 
-            double otherWeight = state.getCurrentWeight(otherEventId, userId);
-            if (otherWeight == 0.0) {
+            BigDecimal otherWeight = BigDecimal.valueOf(
+                    state.getCurrentWeight(otherEventId, userId)
+            );
+
+            if (otherWeight.compareTo(BigDecimal.ZERO) == 0) {
                 continue;
             }
 
-            double oldMin = Math.min(oldWeight, otherWeight);
-            double newMin = Math.min(newWeight, otherWeight);
-            state.updatePairMinSum(eventId, otherEventId, newMin - oldMin);
+            BigDecimal oldMin = oldWeight.min(otherWeight);
+            BigDecimal newMin = newWeight.min(otherWeight);
+            BigDecimal deltaMin = newMin.subtract(oldMin);
+
+            state.updatePairMinSum(eventId, otherEventId, deltaMin.doubleValue());
 
             double similarity = calculateSimilarity(eventId, otherEventId);
 
@@ -120,15 +129,24 @@ public class AggregatorService {
     }
 
     private double calculateSimilarity(long eventA, long eventB) {
-        double minSum = state.getPairMinSum(eventA, eventB);
-        double normA = state.getNorm(eventA);
-        double normB = state.getNorm(eventB);
 
-        if (normA == 0.0 || normB == 0.0) {
+        BigDecimal minSum = BigDecimal.valueOf(state.getPairMinSum(eventA, eventB));
+        BigDecimal normA = BigDecimal.valueOf(state.getNorm(eventA));
+        BigDecimal normB = BigDecimal.valueOf(state.getNorm(eventB));
+
+        if (normA.compareTo(BigDecimal.ZERO) == 0 || normB.compareTo(BigDecimal.ZERO) == 0) {
             return 0.0;
         }
 
-        return minSum / (normA * normB);
+        BigDecimal denominator = normA.multiply(normB);
+
+        if (denominator.compareTo(BigDecimal.ZERO) == 0) {
+            return 0.0;
+        }
+
+        return minSum
+                .divide(denominator, 10, RoundingMode.HALF_UP)
+                .doubleValue();
     }
 
     @PreDestroy
