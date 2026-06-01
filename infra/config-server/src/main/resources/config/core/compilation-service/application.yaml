@@ -29,3 +29,11 @@ eureka:
   instance:
     prefer-ip-address: true
     lease-renewal-interval-in-seconds: 2
+
+grpc:
+  client:
+    analyzer:
+      address: 'discovery:///analyzer'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext

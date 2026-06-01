@@ -7,6 +7,7 @@
         <groupId>ru.practicum</groupId>
         <artifactId>explore-with-me</artifactId>
         <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>stats</artifactId>
@@ -14,9 +15,12 @@
 
     <name>Stats Service</name>
     <modules>
-        <module>stats-server</module>
         <module>stats-client</module>
-        <module>stats-dto</module>
+        <module>serialization</module>
+        <module>aggregator</module>
+        <module>analyzer</module>
+        <module>collector</module>
+        <module>shared</module>
     </modules>
 
     <properties>
@@ -47,5 +51,4 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-
 </project>

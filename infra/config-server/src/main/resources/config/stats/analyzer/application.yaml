@@ -1,0 +1,52 @@
+server:
+  port: 0
+
+grpc:
+  server:
+    port: 0
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/ewm-stats}
+    username: ${SPRING_DATASOURCE_USERNAME:stat}
+    password: ${SPRING_DATASOURCE_PASSWORD:stat}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 20000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  sql:
+    init:
+      mode: never
+      schema-locations: classpath:schema.sql
+
+analyzer:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      user-actions:
+        topic: stats.user-actions.v1
+        group-id: analyzer-user-actions-group
+      similarities:
+        topic: stats.events-similarity.v1
+        group-id: analyzer-similarity-group
+
+stats:
+  action-weights:
+    view: 0.4
+    register: 0.8
+    like: 1.0
+
+logging:
+  level:
+    ru.practicum: DEBUG
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 2

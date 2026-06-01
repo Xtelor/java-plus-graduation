@@ -1,0 +1,26 @@
+server:
+  port: 0
+
+aggregator:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: aggregator-group
+      user-actions-topic: stats.user-actions.v1
+    producer:
+      similarity-topic: stats.events-similarity.v1
+
+stats:
+  action-weights:
+    view: 0.4
+    register: 0.8
+    like: 1.0
+
+logging:
+  level:
+    ru.practicum: DEBUG
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 2

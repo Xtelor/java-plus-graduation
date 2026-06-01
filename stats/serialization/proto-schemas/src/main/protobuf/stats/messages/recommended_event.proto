@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package stats.message;
+
+option java_package = "ru.practicum.ewm.stats.proto";
+option java_multiple_files = true;
+
+message RecommendedEventProto {
+
+  int64 event_id = 1; // Идентификатор рекомендуемого мероприятия
+
+  double score = 2;    // Либо предсказанная оценка, либо коэффициент сходства,
+                      // либо сумма весов действий с указанным мероприятием
+                      // (в зависимости от метода, который вызывался в gRPC-сервисе).
+}

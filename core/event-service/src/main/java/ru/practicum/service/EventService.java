@@ -16,15 +16,23 @@ public interface EventService {
 
     List<EventShortDto> findByInitiatorId(Long initiatorId, int from, int size);
 
-    List<EventShortDto> getEventsPublic(PublicEventsParam publicEventsParam, String ip, String uri);
+    List<EventShortDto> getEventsPublic(PublicEventsParam publicEventsParam);
 
     List<EventFullDto> searchEventsByAdmin(AdminEventsParam adminEventsParam);
 
-    EventFullDto findById(Long eventId, String ip, String uri);
+    EventFullDto findById(Long eventId, long userId);
+
+    EventFullDto findById(Long eventId);
 
     EventFullDto findByIdAndInitiatorId(Long initiatorId, Long eventId);
 
     EventFullDto getInternalEventById(Long eventId);
 
     boolean existsByCategoryId(Long categoryId);
+
+    List<EventShortDto> getByIds(List<Long> eventIds);
+
+    List<EventShortDto> getRecommendations(long userId, int size);
+
+    void likeEvent(long userId, long eventId);
 }

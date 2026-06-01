@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package stats.message;
+
+option java_package = "ru.practicum.ewm.stats.proto";
+option java_multiple_files = true;
+
+message UserPredictionsRequestProto {
+
+  int64 user_id = 1;      // Идентификатор пользователя, для которого вычисляются рекомендации
+
+  int64 max_results = 2;  // Ограничение количества мероприятий в результате выполнения запроса
+}
