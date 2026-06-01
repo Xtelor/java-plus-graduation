@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package stats.message;
+
+option java_package = "ru.practicum.ewm.stats.proto";
+option java_multiple_files = true;
+
+message SimilarEventsRequestProto {
+
+  int64 event_id = 1;       // Идентификатор мероприятия, для которого нужно найти похожие мероприятия
+
+  int64 user_id = 2;        // Идентификатор пользователя, для которого из выдачи нужно исключить мероприятия,
+                            // с которыми он уже взаимодействовал
+
+  int64 max_results = 3;    // Ограничение количества мероприятий в результате выполнения запроса
+}

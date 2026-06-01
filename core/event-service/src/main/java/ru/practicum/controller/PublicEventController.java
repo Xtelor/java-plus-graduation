@@ -25,7 +25,9 @@ import java.util.List;
 @Slf4j
 @Validated
 public class PublicEventController implements PublicEventClient {
+
     private final EventService eventService;
+    private static final String USER_ID_HEADER = "X-EWM-USER-ID";
 
     @Override
     @GetMapping
@@ -50,20 +52,42 @@ public class PublicEventController implements PublicEventClient {
         PublicEventsParam publicEventsParam = new PublicEventsParam(text, categories, paid,  rangeStart,
                 rangeEnd, onlyAvailable, sort, from, size);
 
-        return eventService.getEventsPublic(publicEventsParam, request.getRemoteAddr(), request.getRequestURI());
+        return eventService.getEventsPublic(publicEventsParam);
     }
 
     @Override
     @GetMapping("/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public EventFullDto findById(@PathVariable Long eventId) {
-
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
-                .currentRequestAttributes())
-                .getRequest();
+    public EventFullDto findById(
+            @PathVariable Long eventId,
+            @RequestHeader(USER_ID_HEADER) long userId) {
 
         log.info("Получение полной информации о событии");
 
-        return eventService.findById(eventId, request.getRemoteAddr(), request.getRequestURI());
+        return eventService.findById(eventId, userId);
+    }
+
+    @Override
+    @GetMapping("/recommendations")
+    @ResponseStatus(HttpStatus.OK)
+    public List<EventShortDto> getRecommendations(
+            @RequestHeader(USER_ID_HEADER) long userId,
+            @RequestParam(defaultValue = "10") @Positive int size) {
+
+        log.info("GET /events/recommendations userId={}", userId);
+
+        return eventService.getRecommendations(userId, size);
+    }
+
+    @Override
+    @PutMapping("/{eventId}/like")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void likeEvent(
+            @PathVariable Long eventId,
+            @RequestHeader(USER_ID_HEADER) long userId) {
+
+        log.info("PUT /events/{}/like userId={}", eventId, userId);
+
+        eventService.likeEvent(userId, eventId);
     }
 }

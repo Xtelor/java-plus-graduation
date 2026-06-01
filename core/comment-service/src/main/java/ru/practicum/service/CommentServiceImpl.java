@@ -20,7 +20,7 @@ import ru.practicum.enums.State;
 import ru.practicum.exceptions.ConditionsNotMetException;
 import ru.practicum.exceptions.NotFoundException;
 import ru.practicum.feign.admin.UserClient;
-import ru.practicum.feign.events.PublicEventClient;
+import ru.practicum.feign.events.InternalEventClient;
 import ru.practicum.feign.requests.PrivateRequestClient;
 import ru.practicum.mapper.CommentMapper;
 import ru.practicum.repository.CommentRepository;
@@ -36,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final UserClient userClient;
-    private final PublicEventClient eventClient;
+    private final InternalEventClient eventClient;
     private final PrivateRequestClient requestClient;
 
     @Override
@@ -173,7 +173,7 @@ public class CommentServiceImpl implements CommentService {
     private EventFullDto getEventOrThrow(Long eventId) {
 
         try {
-            return eventClient.findById(eventId);
+            return eventClient.getById(eventId);
         } catch (FeignException.NotFound e) {
             throw new NotFoundException("Событие не найдено");
         }

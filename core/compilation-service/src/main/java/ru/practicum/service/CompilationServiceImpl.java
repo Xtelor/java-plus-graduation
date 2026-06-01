@@ -6,8 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.StatsClient;
-import ru.practicum.ViewStatsDto;
+import ru.practicum.AnalyzerClient;
 import ru.practicum.dto.compilations.CompilationDto;
 import ru.practicum.dto.compilations.NewCompilationDto;
 import ru.practicum.dto.compilations.UpdateCompilationRequest;
@@ -19,7 +18,6 @@ import ru.practicum.feign.events.InternalEventClient;
 import ru.practicum.mapper.CompilationMapper;
 import ru.practicum.repository.CompilationRepository;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,7 +29,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
     private final InternalEventClient internalEventClient;
-    private final StatsClient statsClient;
+    private final AnalyzerClient analyzerClient;
 
     @Override
     @Transactional
@@ -142,8 +140,8 @@ public class CompilationServiceImpl implements CompilationService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        Map<Long, Long> viewsMap = getViewsForEvents(
-                allEventDtos.stream().map(EventFullDto::getId).collect(Collectors.toSet())
+        Map<Long, Double> ratingsMap = getRatingsForEvents(
+                allEventDtos.stream().map(EventFullDto::getId).collect(Collectors.toList())
         );
 
         Map<Long, Long> confirmedRequestsMap = getConfirmedRequestsForEvents(allEventDtos);
@@ -151,7 +149,7 @@ public class CompilationServiceImpl implements CompilationService {
         Map<Long, EventShortDto> eventDtoMap = allEventDtos.stream()
                 .collect(Collectors.toMap(
                         EventFullDto::getId,
-                        event -> createEventShortDtoWithStats(event, viewsMap, confirmedRequestsMap)
+                        event -> createEventShortDtoWithStats(event, ratingsMap, confirmedRequestsMap)
                 ));
 
         return compilations.stream()
@@ -182,20 +180,20 @@ public class CompilationServiceImpl implements CompilationService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        Set<Long> eventIds = eventDtos.stream()
+        List<Long> eventIds = eventDtos.stream()
                 .map(EventFullDto::getId)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
 
-        Map<Long, Long> viewsMap = getViewsForEvents(eventIds);
+        Map<Long, Double> ratingsMap = getRatingsForEvents(eventIds);
         Map<Long, Long> confirmedRequestsMap = getConfirmedRequestsForEvents(eventDtos);
 
         return eventDtos.stream()
-                .map(event -> createEventShortDtoWithStats(event, viewsMap, confirmedRequestsMap))
+                .map(event -> createEventShortDtoWithStats(event, ratingsMap, confirmedRequestsMap))
                 .collect(Collectors.toSet());
     }
 
     private EventShortDto createEventShortDtoWithStats(EventFullDto event,
-                                                       Map<Long, Long> viewsMap,
+                                                       Map<Long, Double> ratingsMap,
                                                        Map<Long, Long> confirmedRequestsMap) {
         EventShortDto dto = EventShortDto.builder()
                 .id(event.getId())
@@ -207,39 +205,22 @@ public class CompilationServiceImpl implements CompilationService {
                 .paid(event.getPaid())
                 .build();
 
-        dto.setViews(viewsMap.getOrDefault(event.getId(), 0L));
+        dto.setRating(ratingsMap.getOrDefault(event.getId(), 0.0));
         dto.setConfirmedRequests(confirmedRequestsMap.getOrDefault(event.getId(), 0L));
 
         return dto;
     }
 
-    private Map<Long, Long> getViewsForEvents(Set<Long> eventIds) {
+    private Map<Long, Double> getRatingsForEvents(List<Long> eventIds) {
 
-        if (eventIds.isEmpty()) {
+        if (eventIds == null || eventIds.isEmpty()) {
             return Collections.emptyMap();
         }
 
         try {
-            List<String> uris = eventIds.stream()
-                    .map(id -> "/events/" + id)
-                    .collect(Collectors.toList());
-
-            List<ViewStatsDto> stats = statsClient.getStats(
-                    LocalDateTime.now().minusYears(1),
-                    LocalDateTime.now().plusDays(1),
-                    uris,
-                    false
-            );
-
-            return stats.stream()
-                    .filter(stat -> stat.getUri() != null)
-                    .collect(Collectors.toMap(
-                            stat -> extractEventIdFromUri(stat.getUri()),
-                            ViewStatsDto::getHits,
-                            Long::sum
-                    ));
+            return analyzerClient.getRatings(eventIds);
         } catch (Exception e) {
-            log.warn("Не удалось получить статистику: {}", e.getMessage());
+            log.warn("Не удалось получить рейтинги: {}", e.getMessage());
             return Collections.emptyMap();
         }
     }
@@ -255,17 +236,6 @@ public class CompilationServiceImpl implements CompilationService {
                         EventFullDto::getId,
                         event -> event.getConfirmedRequests() == null ? 0L : event.getConfirmedRequests()
                 ));
-    }
-
-    private Long extractEventIdFromUri(String uri) {
-
-        try {
-            String[] parts = uri.split("/");
-            return Long.parseLong(parts[parts.length - 1]);
-        } catch (Exception e) {
-            log.warn("Не удалось извлечь ID события из URI: {}", uri);
-            return null;
-        }
     }
 
     private Compilation getCompilationWithEvents(Long compilationId) {

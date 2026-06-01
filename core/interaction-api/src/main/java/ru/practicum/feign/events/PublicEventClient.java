@@ -5,6 +5,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.dto.events.EventFullDto;
 import ru.practicum.dto.events.EventShortDto;
@@ -30,5 +31,14 @@ public interface PublicEventClient {
 
     // Получение полной информации о событии
     @GetMapping("/{eventId}")
-    EventFullDto findById(@PathVariable("eventId") Long eventId);
+    EventFullDto findById(@PathVariable("eventId") Long eventId,
+                          @RequestHeader(value = "X-EWM-USER-ID") long userId);
+
+    List<EventShortDto> getRecommendations(
+            @RequestHeader("X-EWM-USER-ID") long userId,
+            @RequestParam(defaultValue = "10") @Positive int size);
+
+    void likeEvent(
+            @PathVariable Long eventId,
+            @RequestHeader("X-EWM-USER-ID") long userId);
 }
