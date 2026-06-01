@@ -47,15 +47,11 @@ public class SnapshotProcessor {
 
             while (running) {
                 var records = userActionConsumer.poll(Duration.ofMillis(200));
-
                 for (var record : records) {
                     txService.processUserAction(record.value());
                 }
             }
-
         } catch (WakeupException ignored) {
-        } finally {
-            userActionConsumer.close();
         }
     }
 
@@ -65,26 +61,28 @@ public class SnapshotProcessor {
 
             while (running) {
                 var records = similarityConsumer.poll(Duration.ofMillis(200));
-
                 for (var record : records) {
                     txService.processSimilarity(record.value());
                 }
-
-                if (!records.isEmpty()) {
-                    similarityConsumer.commitSync();
-                }
             }
-
         } catch (WakeupException ignored) {
-        } finally {
-            similarityConsumer.close();
         }
     }
 
     @PreDestroy
     public void stop() {
         running = false;
+
         userActionConsumer.wakeup();
         similarityConsumer.wakeup();
+
+        try {
+            if (actionThread != null) actionThread.join();
+            if (similarityThread != null) similarityThread.join();
+        } catch (InterruptedException ignored) {
+        }
+
+        userActionConsumer.close();
+        similarityConsumer.close();
     }
 }
